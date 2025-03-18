@@ -6,18 +6,20 @@ import {
     BookOpen,
     Bot,
     Command,
-    Frame,
+    Component,
     GalleryVerticalEnd,
-    Map,
-    PieChart,
+    LayoutDashboard,
+    Percent,
     Settings2,
+    Shapes, ShoppingBasket,
     SquareTerminal,
+    User
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import {NavMain} from "@/components/nav-main"
+import {NavProjects} from "@/components/nav-projects"
+import {NavUser} from "@/components/nav-user"
+import {TeamSwitcher} from "@/components/team-switcher"
 import {
     Sidebar,
     SidebarContent,
@@ -139,37 +141,53 @@ const data = {
     ],
     projects: [
         {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
+            name: "Dashboard",
+            url: "/",
+            icon: LayoutDashboard,
         },
         {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
+            name: "User",
+            url: "/user",
+            icon: User,
         },
         {
-            name: "Travel",
+            name: "Category",
             url: "#",
-            icon: Map,
+            icon: Shapes,
         },
+        {
+            name: "Coupon",
+            url: "#",
+            icon: Component,
+        },
+        {
+            name: "Discount",
+            url: "/",
+            icon: Percent,
+        },
+        {
+            name: "Products",
+            url: "",
+            icon: ShoppingBasket
+        }
     ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                <TeamSwitcher teams={data.teams}/>
             </SidebarHeader>
-            <SidebarContent  className={` scrollbar-hide`}>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
+            <SidebarContent className={` scrollbar-hide`}>
+                <NavProjects projects={data.projects}/>
+                <NavMain items={data.navMain}/>
+
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={data.user}/>
             </SidebarFooter>
-            <SidebarRail />
+            <SidebarRail/>
         </Sidebar>
     )
 }
