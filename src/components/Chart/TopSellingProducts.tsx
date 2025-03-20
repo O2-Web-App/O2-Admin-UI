@@ -36,9 +36,12 @@ const TopSellingProducts = () => {
       {
         label: "Sales Count",
         data: salesData, // X-axis: Number of sales
-        backgroundColor: "rgba(54, 162, 235, 0.6)", // Bar color
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
+        borderColor: "rgba(85, 159, 52, 1)", // Line color
+        backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
+        borderWidth: 2,
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(85, 159, 52, 1)",
+        tension: 0.3,
       },
     ],
   };

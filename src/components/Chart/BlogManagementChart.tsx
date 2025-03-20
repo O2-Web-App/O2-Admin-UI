@@ -1,11 +1,12 @@
 "use client";
 
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend,
@@ -16,18 +17,19 @@ import { useGetChartUserQuery } from "@/redux/service/charts";
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend
 );
 
 const BlogManagementChart = () => {
-  // Fetch user engagement data from API
+  // Fetch user engagement data
   const { data: userChart } = useGetChartUserQuery({});
   const apiData = userChart?.data?.user_engagement || [];
 
-  // Define month mapping for better readability
+  // Define month mapping
   const monthMap: Record<string, string> = {
     "01": "January",
     "02": "February",
@@ -43,27 +45,50 @@ const BlogManagementChart = () => {
     "12": "December",
   };
 
-  // Extract dates and engagement counts
-  const engagementDates = apiData.map((entry: any) => {
-    const [year, month] = entry.date.split("-");
-    return `${monthMap[month]} ${year}`; // Converts "2025-02" → "February 2025"
+  // Extract unique years dynamically
+  const uniqueYears = [
+    ...new Set(apiData.map((entry: any) => entry.date.split("-")[0])),
+  ];
+
+  // Generate all months for available years
+  const allMonths = uniqueYears.flatMap((year) =>
+    Object.keys(monthMap).map((month) => `${year}-${month}`)
+  );
+
+  // Convert API data into a map { "2025-03": 3 }
+  const engagementMap = apiData.reduce(
+    (
+      acc: Record<string, number>,
+      entry: { date: string; engagement_count: number }
+    ) => {
+      acc[entry.date] = entry.engagement_count;
+      return acc;
+    },
+    {}
+  );
+
+  // Generate labels (month names) and ensure all months are represented
+  const labels = allMonths.map((date) => {
+    const [, month] = date.split("-");
+    return monthMap[month]; // Converts "2025-03" → "March"
   });
 
-  const engagementCounts = apiData.map((entry: any) => entry.engagement_count);
+  // Generate engagement count values for each month (defaulting to 0 if missing)
+  const engagementCounts = allMonths.map((month) => engagementMap[month] || 0);
 
   // Define the chart data
   const data = {
-    labels: engagementDates, // X-axis: Dates formatted as "February 2025"
+    labels, // X-axis: Month names
     datasets: [
       {
         label: "User Engagement",
         data: engagementCounts, // Y-axis: Engagement count
-        borderColor: "rgba(85, 159, 52, 1)", // Line color
-        backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
+        borderColor: "rgba(75, 192, 192, 1)", // Line color
+        backgroundColor: "rgba(75, 192, 192, 0.2)", // Fill below line
         borderWidth: 2,
         pointRadius: 5,
-        pointBackgroundColor: "rgba(85, 159, 52, 1)",
-        tension: 0.3,
+        pointBackgroundColor: "rgba(75, 192, 192, 1)",
+        tension: 0.3, // Smooth curve for the line
       },
     ],
   };
@@ -87,13 +112,13 @@ const BlogManagementChart = () => {
     scales: {
       x: {
         grid: {
-          display: false, // Hide grid lines for better visibility
+          display: false,
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1, // Adjust based on engagement range
+          stepSize: 1,
         },
       },
     },
@@ -101,7 +126,7 @@ const BlogManagementChart = () => {
 
   return (
     <div className="h-[500px]">
-      <Bar data={data} options={options} />
+      <Line data={data} options={options} />
     </div>
   );
 };

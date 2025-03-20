@@ -1,34 +1,33 @@
 "use client";
 
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  LineElement,
-  PointElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
 import { useGetChartUserQuery } from "@/redux/service/charts";
 
+// Register necessary Chart.js elements
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  LineElement,
-  PointElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
 );
 
 const OrderChart = () => {
-  // get user data
+  // Fetch user order data
   const { data: userChart } = useGetChartUserQuery({});
   const apiData = userChart?.data?.orders_over_time || [];
 
-  // Define months with both number & name
+  // Define months mapping
   const monthMap: Record<string, string> = {
     "01": "January",
     "02": "February",
@@ -44,11 +43,18 @@ const OrderChart = () => {
     "12": "December",
   };
 
-  // List of all months in a year
-  const allMonths = Object.keys(monthMap).map((num) => `2025-${num}`);
+  // Extract unique years dynamically
+  const uniqueYears = [
+    ...new Set(apiData.map((entry: any) => entry.date.split("-")[0])),
+  ];
 
-  // Convert test data into an object { "2025-01": 5, "2025-02": 8, ... }
-  const userGrowthMap = apiData.reduce(
+  // Generate all months for available years
+  const allMonths = uniqueYears.flatMap((year) =>
+    Object.keys(monthMap).map((month) => `${year}-${month}`)
+  );
+
+  // Convert API data into a map { "2025-01": 5, "2025-02": 8, ... }
+  const orderCountMap = apiData.reduce(
     (acc: Record<string, number>, entry: { date: string; count: number }) => {
       acc[entry.date] = entry.count;
       return acc;
@@ -56,16 +62,22 @@ const OrderChart = () => {
     {}
   );
 
-  // Generate labels (month names) and ensure all months exist
-  const labels = allMonths.map((date) => monthMap[date.split("-")[1]]);
-  const counts = allMonths.map((month) => userGrowthMap[month] || 0);
+  // Generate labels (month names) and ensure all months are represented
+  const labels = allMonths.map((date) => {
+    const [, month] = date.split("-");
+    return monthMap[month]; // Converts "2025-02" → "February"
+  });
 
+  // Generate order count values for each month (defaulting to 0 if missing)
+  const orderCounts = allMonths.map((month) => orderCountMap[month] || 0);
+
+  // Define the chart data
   const data = {
     labels, // X-axis: Month names
     datasets: [
       {
-        label: "Order Over Time  ",
-        data: counts, // Y-axis: User counts per month
+        label: "Orders Over Time",
+        data: orderCounts, // Y-axis: Order count
         borderColor: "rgba(85, 159, 52, 1)", // Line color
         backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
         borderWidth: 2,
@@ -76,6 +88,7 @@ const OrderChart = () => {
     ],
   };
 
+  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -85,7 +98,7 @@ const OrderChart = () => {
       },
       title: {
         display: true,
-        text: "Order Over Time by Month ",
+        text: "Orders Over Time by Month",
         font: {
           size: 18,
         },
@@ -108,7 +121,7 @@ const OrderChart = () => {
 
   return (
     <div className="h-[500px]">
-      <Line data={data} options={options} />
+      <Bar data={data} options={options} />
     </div>
   );
 };

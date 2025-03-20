@@ -28,7 +28,7 @@ const CouponUsageChart = () => {
   const apiData = userChart?.data?.coupon_usage || [];
 
   // Extract coupon codes and usage counts
-  const couponCodes = apiData.map((entry: any) => entry.coupon_code);
+  const couponCodes = apiData.map((entry: any) => entry.code);
   const usageCounts = apiData.map((entry: any) => entry.usage_count);
 
   // Define the chart data
