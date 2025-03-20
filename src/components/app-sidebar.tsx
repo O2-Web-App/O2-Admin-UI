@@ -152,22 +152,22 @@ const data = {
         },
         {
             name: "Category",
-            url: "#",
+            url: "/category",
             icon: Shapes,
         },
         {
             name: "Coupon",
-            url: "#",
+            url: "/coupon",
             icon: Component,
         },
         {
             name: "Discount",
-            url: "/",
+            url: "/discount",
             icon: Percent,
         },
         {
             name: "Products",
-            url: "",
+            url: "/product",
             icon: ShoppingBasket
         }
     ],

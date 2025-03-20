@@ -1,8 +1,10 @@
-import {DataTableUserComponent} from "@/components/user/data-table-users";
+import OverviewComponent from "@/components/dashboard/OverviewComponent";
 
 export default function Home() {
     return (
         <section>
+
+            <OverviewComponent/>
 
         </section>
     );
