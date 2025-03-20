@@ -1,20 +1,17 @@
 "use client";
+import styles from "@/app/(auth)/login/login.module.css";
+import { setAccessToken } from "@/redux/features/auth/authSlice";
+import { setUser } from "@/redux/features/user";
+import { useAppDispatch } from "@/redux/hooks";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import * as Yup from "yup";
-import { useGetAllUserQuery } from "@/redux/service/user";
-import { useAppDispatch } from "@/redux/hooks";
-import { setAccessToken } from "@/redux/features/auth/authSlice";
-import styles from "@/app/(auth)/login/login.module.css";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import Link from "next/link";
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
-  const { data } = useGetAllUserQuery({});
-
-  console.log(data);
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +47,8 @@ export default function LoginForm() {
       );
 
       const result = await response.json();
-      console.log("Login API Response:", result);
+      dispatch(setUser(result?.data?.user));
+      console.log("Login API Response:", result?.data?.user);
 
       if (response.ok && result?.data?.access_token) {
         const { access_token, refresh_token } = result.data;
@@ -65,22 +63,25 @@ export default function LoginForm() {
 
         // Save in localStorage for persistence
         localStorage.setItem("access_token", access_token);
-
-        // toast({
-        //   title: "Login Successful 🎉",
-        //   description: "Redirecting to dashboard...",
-        //   variant: "success",
-        //   duration: 2000,
-        // });
+        router.push(`/`);
+        toast.success("Login Successfully ", {
+          style: {
+            background: "#22bb33",
+          },
+        });
       } else {
+        toast.success("Incorret Email or Password", {
+          style: {
+            background: "#bb2124",
+          },
+        });
       }
     } catch (error) {
-      // toast({
-      //   title: "Login Failed",
-
-      //   variant: "error",
-      //   duration: 3000,
-      // });
+      toast.success("Login Fail", {
+        style: {
+          background: "#bb2124",
+        },
+      });
       console.error("❌ Login Error:", error);
     } finally {
       setIsLoading(false);
