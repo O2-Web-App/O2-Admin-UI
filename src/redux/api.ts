@@ -30,7 +30,7 @@ const baseQuery = fetchBaseQuery({
       token = localStorage.getItem("access_token") || "";
     }
 
-    console.log("🔑 Token Retrieved for API Call:", token); // Debugging
+    // console.log("🔑 Token Retrieved for API Call:", token); // Debugging
 
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -58,13 +58,7 @@ const baseQueryWithReAuth = async (
 ): Promise<BaseQueryReturnType> => {
   let result = await baseQuery(args, api, extraOptions);
 
-  console.log("📡 API Request Details:", args);
-  console.log("🔍 URL:", args.url);
-  console.log("🔍 Method:", args.method);
-
   if (result.error?.status === 401) {
-    console.warn("🚨 Unauthorized! Attempting token refresh...");
-
     try {
       const refreshResponse = await fetch(`/api/refresh`, {
         method: "POST",
@@ -73,7 +67,6 @@ const baseQueryWithReAuth = async (
 
       if (refreshResponse.ok) {
         const refreshData = await refreshResponse.json();
-        console.log("✅ New Access Token Retrieved:", refreshData.access_token);
 
         // ✅ Store new access token in Redux & LocalStorage
         api.dispatch(setAccessToken(refreshData.access_token));
@@ -86,8 +79,6 @@ const baseQueryWithReAuth = async (
         const updatedArgs = { ...args, headers: newHeaders };
         result = await baseQuery(updatedArgs, api, extraOptions);
       } else {
-        //console.error("❌ Refresh token failed (401). Logging out...");
-
         // ✅ Attempt logout if refresh fails
         await fetch(`/api/logout`, {
           method: "POST",
@@ -110,9 +101,7 @@ const baseQueryWithReAuth = async (
 
 // ✅ Create the API service with Redux Toolkit's `createApi`
 export const o2API = createApi({
-  tagTypes: [
-   
-  ],
+  tagTypes: ["Users", "Products", "Category"],
   reducerPath: "o2API",
   baseQuery: baseQueryWithReAuth, // ✅ Use the custom base query with re-authentication
   endpoints: () => ({}),

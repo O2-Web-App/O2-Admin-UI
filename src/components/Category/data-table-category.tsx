@@ -1,14 +1,5 @@
 "use client";
-import { Pagination } from "@/components/Pagination";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,9 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columnsUser } from "@/components/user/ColumnUsers";
-import { useGetAllUserQuery } from "@/redux/service/user";
-import { UserType } from "@/types/users";
 import {
   ColumnFiltersState,
   SortingState,
@@ -31,46 +19,57 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ColumnCategory } from "./ColumnCategory";
 
-
-export function DataTableUserComponent() {
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useGetAllCategoriesQuery } from "@/redux/service/category";
+import { CategoryType, Subcategory } from "@/types/category";
+import HeaderTable from "../HeaderTable";
+import { Pagination } from "../Pagination";
+import { Button } from "../ui/button";
+import TabCategory from "./TabCategory";
+import { useCreateCategoryMutation } from "@/redux/service/category";
+import { toast } from "sonner";
+export function DataTableCategoryComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [categoryData, setCategoryData] = useState<Subcategory[]>([]);
+  const [categoryName, setCategoryName] = useState("");
 
-  // get all user data from api
-  const { data: users } = useGetAllUserQuery({
-    pages: currentPage,
-    per_page: itemsPerPage,
-  });
+  // create category
+  const [createCategory] = useCreateCategoryMutation();
 
-  const pagination = users?.data?.metadata;
+  // get all categories
+  const { data, isLoading } = useGetAllCategoriesQuery({});
+  const result = data?.data || [];
 
-  // Use static data instead of API call
-  const userData: UserType[] = users?.data?.data || [];
-
-  const isLoading = false;
-
-  const filteredData = useMemo(() => {
-    return userData?.filter((item) => {
-      const matchStatus =
-        selectedStatus === "all" ||
-        item.is_blocked.toString() === selectedStatus;
-
-      return matchStatus;
-    });
-  }, [userData, selectedStatus]);
-
+  useEffect(() => {
+    if (result?.length > 0) {
+      const allSubcategories = result.flatMap(
+        (item: CategoryType) => item?.subcategories || []
+      );
+      setCategoryData(allSubcategories);
+    }
+  }, [result]);
 
   const table = useReactTable({
-    data: filteredData,
-    columns: columnsUser,
-    onSortingChange: setSorting,
+    data: categoryData,
+    columns: ColumnCategory,
+
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -85,39 +84,109 @@ export function DataTableUserComponent() {
       rowSelection,
     },
   });
+  const paginatedData = useMemo(
+    () =>
+      categoryData.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      ),
+    [currentPage, itemsPerPage]
+  );
+
+  const handleCreateCategory = async () => {
+    if (categoryName.trim() === "")
+      toast.error("Category is Require", {
+        style: {
+          background: "#bb2124",
+          color: "#fff",
+        },
+      });
+
+    try {
+      const response = await createCategory({ name: categoryName });
+      if (response.data) {
+        toast.success("Category create successfully", {
+          style: {
+            background: "#22bb33",
+            color: "#fff",
+          },
+        });
+      } else {
+        toast.error("Failed to create category", {
+          style: {
+            background: "#bb2124",
+            color: "#fff",
+          },
+        });
+      }
+    } catch (error) {
+      toast.error("Something went wrong ", {
+        style: {
+          background: "#bb2124",
+        },
+      });
+    }
+
+    setCategoryName(""); // Clear input after action
+  };
 
   return (
     <section className="w-full flex flex-col">
-  
+      <HeaderTable data={[]} title="CATEGORY" />
+
+      <div className="mt-5 ml-6">
+        <TabCategory result={result} />
+      </div>
       <section className="w-full bg-white p-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
-            placeholder="Search by user name"
+            placeholder="Search by Subcategory name"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="w-full border-[1px] h-[50px] text-md md:text-lg bg-white border-light-border-color rounded-[6px] placeholder:text-gray-400 text-primary-color-text dark:backdrop-blur dark:bg-opacity-0 dark:text-secondary-color-text"
           />
-          <section className="w-full lg:w-auto flex flex-col sm:flex-row gap-2">
-            <Select onValueChange={setSelectedStatus}>
-              <SelectTrigger
-                className={`w-full lg:max-w-[250px] h-[50px] border-[1px] text-md md:text-lg bg-white border-light-border-color rounded-[6px] placeholder:text-gray-400 ${
-                  selectedStatus === "all"
-                    ? "text-gray-400 dark:text-gray-400"
-                    : "text-black dark:text-black"
-                } dark:backdrop-blur dark:bg-opacity-5 dark:text-secondary-color-text`}
-              >
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent className="w-full lg:max-w-[300px] border-[1px] text-md md:text-lg bg-white border-light-border-color rounded-[6px] placeholder:text-gray-400 text-primary-color-text dark:backdrop-blur dark:bg-opacity-0 dark:text-secondary-color-text">
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="1">Disbale</SelectItem>
-                <SelectItem value="0">Enable</SelectItem>
-              </SelectContent>
-            </Select>
-          </section>
+          {/* create Category */}
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="text-white bg-primary rounded-[6px] h-[50px] px-4 w-auto">
+                Create Category
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Create Product Category</AlertDialogTitle>
+              </AlertDialogHeader>
+
+              {/* 🧾 Input form */}
+              <div className="flex flex-col space-y-2">
+                <label htmlFor="category" className="text-sm font-medium">
+                  Category Name
+                </label>
+                <Input
+                  id="category"
+                  placeholder="Enter category name"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  className="h-[45px]"
+                />
+              </div>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="text-white bg-primary"
+                  onClick={handleCreateCategory}
+                >
+                  Create
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </section>
+
         <div className="rounded-md border">
           {isLoading ? (
             <div className="flex justify-center items-center h-20 text-lg md:text-2xl xl:text-4xl">
@@ -165,7 +234,7 @@ export function DataTableUserComponent() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columnsUser.length}
+                      colSpan={ColumnCategory.length}
                       className="h-20 text-center text-lg md:text-2xl xl:text-4xl"
                     >
                       <div className="flex w-full justify-center items-center">
@@ -179,7 +248,7 @@ export function DataTableUserComponent() {
           )}
         </div>
         <Pagination
-          totalItems={pagination?.total_items} // real total from API
+          totalItems={categoryData.length}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={setCurrentPage}

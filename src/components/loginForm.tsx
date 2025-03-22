@@ -53,7 +53,6 @@ export default function LoginForm() {
       if (response.ok && result?.data?.access_token) {
         const { access_token, refresh_token } = result.data;
 
-        console.log("✅ Extracted Access Token:", access_token);
 
         // Store tokens in Redux
         dispatch(setAccessToken(access_token));
@@ -67,12 +66,14 @@ export default function LoginForm() {
         toast.success("Login Successfully ", {
           style: {
             background: "#22bb33",
+            color: "white",
           },
         });
       } else {
         toast.success("Incorret Email or Password", {
           style: {
             background: "#bb2124",
+            color: "white",
           },
         });
       }
@@ -80,6 +81,7 @@ export default function LoginForm() {
       toast.success("Login Fail", {
         style: {
           background: "#bb2124",
+          color: "white",
         },
       });
       console.error("❌ Login Error:", error);

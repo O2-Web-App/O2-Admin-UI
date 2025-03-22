@@ -21,10 +21,9 @@ import { IoMdMore } from "react-icons/io";
 import { MdOutlinePreview } from "react-icons/md";
 type ActionUserComponentProps = {
   uuid: string;
-  status?: number;
 };
 
-export function ActionUserComponent({ uuid }: ActionUserComponentProps) {
+export function ActionCategoryComponent({ uuid }: ActionUserComponentProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const imageBaseUrl = process.env.NEXT_PUBLIC_O2_API_URL;
@@ -127,24 +126,24 @@ export function ActionUserComponent({ uuid }: ActionUserComponentProps) {
                         <p>{userResponse?.bio || "N/A"} </p>
                       </div>
                     </div>
-                    
-                   <div >
-                     {/* gender */}
-                     <div className="mb-2">
-                      <p className="text-body text-description">Gender</p>
-                      <p>{userResponse?.gender || "N/A"} </p>
+
+                    <div>
+                      {/* gender */}
+                      <div className="mb-2">
+                        <p className="text-body text-description">Gender</p>
+                        <p>{userResponse?.gender || "N/A"} </p>
+                      </div>
+                      {/* date_of_birth */}
+                      <div className="mb-2">
+                        <p className="text-body text-description">Dob</p>
+                        <p>{userResponse?.date_of_birth || "N/A"}</p>
+                      </div>
+                      {/* country */}
+                      <div className="mb-2">
+                        <p className="text-body text-description">Country</p>
+                        <p>{userResponse?.country || "N/A"}</p>
+                      </div>
                     </div>
-                    {/* date_of_birth */}
-                    <div className="mb-2">
-                      <p className="text-body text-description">Dob</p>
-                      <p>{userResponse?.date_of_birth || "N/A"}</p>
-                    </div>
-                    {/* country */}
-                    <div className="mb-2">
-                      <p className="text-body text-description">Country</p>
-                      <p>{userResponse?.country || "N/A"}</p>
-                    </div>
-                   </div>
                   </div>
                 </TabsContent>
               </Tabs>

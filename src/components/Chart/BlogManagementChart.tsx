@@ -81,14 +81,14 @@ const BlogManagementChart = () => {
     labels, // X-axis: Month names
     datasets: [
       {
-        label: "User Engagement",
+        label: "Blog Engagement",
         data: engagementCounts, // Y-axis: Engagement count
-        borderColor: "rgba(75, 192, 192, 1)", // Line color
-        backgroundColor: "rgba(75, 192, 192, 0.2)", // Fill below line
+        borderColor: "rgba(85, 159, 52, 1)", // Line color
+        backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
         borderWidth: 2,
         pointRadius: 5,
-        pointBackgroundColor: "rgba(75, 192, 192, 1)",
-        tension: 0.3, // Smooth curve for the line
+        pointBackgroundColor: "rgba(85, 159, 52, 1)",
+        tension: 0.3,
       },
     ],
   };

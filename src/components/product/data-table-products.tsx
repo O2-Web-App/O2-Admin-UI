@@ -1,6 +1,5 @@
 "use client";
 import { Pagination } from "@/components/Pagination";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,9 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columnsUser } from "@/components/user/ColumnUsers";
-import { useGetAllUserQuery } from "@/redux/service/user";
-import { UserType } from "@/types/users";
+
+import { ProductType } from "@/types/products";
 import {
   ColumnFiltersState,
   SortingState,
@@ -31,10 +29,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { ColumnProducts } from "./ColumnProducts";
+import { useGetAllProductQuery } from "@/redux/service/product";
 
-
-export function DataTableUserComponent() {
+export function DataTableProductComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -43,33 +42,22 @@ export function DataTableUserComponent() {
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [selectedStatus, setSelectedStatus] = useState("all");
 
-  // get all user data from api
-  const { data: users } = useGetAllUserQuery({
+  // get all product data from api
+  const { data: products } = useGetAllProductQuery({
     pages: currentPage,
     per_page: itemsPerPage,
   });
 
-  const pagination = users?.data?.metadata;
+  const pagination = products?.data?.metadata;
 
   // Use static data instead of API call
-  const userData: UserType[] = users?.data?.data || [];
+  const productData: ProductType[] = products?.data?.data || [];
 
   const isLoading = false;
 
-  const filteredData = useMemo(() => {
-    return userData?.filter((item) => {
-      const matchStatus =
-        selectedStatus === "all" ||
-        item.is_blocked.toString() === selectedStatus;
-
-      return matchStatus;
-    });
-  }, [userData, selectedStatus]);
-
-
   const table = useReactTable({
-    data: filteredData,
-    columns: columnsUser,
+    data: productData,
+    columns: ColumnProducts,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -88,8 +76,7 @@ export function DataTableUserComponent() {
 
   return (
     <section className="w-full flex flex-col">
-  
-      <section className="w-full bg-white p-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
+      <section className="w-full bg-white  rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
             placeholder="Search by user name"
@@ -165,7 +152,7 @@ export function DataTableUserComponent() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columnsUser.length}
+                      colSpan={ColumnProducts.length}
                       className="h-20 text-center text-lg md:text-2xl xl:text-4xl"
                     >
                       <div className="flex w-full justify-center items-center">
