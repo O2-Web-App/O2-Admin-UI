@@ -11,6 +11,14 @@ export const categoryAPI = o2API.injectEndpoints({
       providesTags: ["Category"],
     }),
 
+    getCategoryByUuid: builder.query<any, { uuid: string }>({
+      query: ({ uuid }) => ({
+        url: `api/categories/${uuid}`,
+        method: "GET",
+      }),
+      providesTags: ["Category"],
+    }),
+
     // delete category by uuid
     deleteCategory: builder.mutation({
       query: (uuid: string) => ({
@@ -29,6 +37,32 @@ export const categoryAPI = o2API.injectEndpoints({
       }),
       invalidatesTags: ["Category"],
     }),
+
+    // create SubCategory
+    createSubCategory: builder.mutation<
+      any,
+      { name: string; parent_uuid: string }
+    >({
+      query: ({ name, parent_uuid }) => ({
+        url: `api/categories/subcategories`,
+        method: "POST",
+        body: { name, parent_uuid },
+      }),
+      invalidatesTags: ["Category"],
+    }),
+
+    // update category name
+    updateCategoryNameByUuid: builder.mutation<
+      any,
+      { name: string; uuid: string }
+    >({
+      query: ({ name, uuid }) => ({
+        url: `api/categories/${uuid}`,
+        method: "PUT",
+        body: { name },
+      }),
+      invalidatesTags: ["Category"],
+    }),
   }),
 });
 
@@ -36,4 +70,7 @@ export const {
   useGetAllCategoriesQuery,
   useDeleteCategoryMutation,
   useCreateCategoryMutation,
+  useGetCategoryByUuidQuery,
+  useCreateSubCategoryMutation,
+  useUpdateCategoryNameByUuidMutation,
 } = categoryAPI;

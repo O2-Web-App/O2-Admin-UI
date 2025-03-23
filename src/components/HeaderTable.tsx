@@ -25,11 +25,10 @@ export default function HeaderTable({
         </div>
         <Button
           onClick={exportToExcel}
-          className="text-secondary-color-text rounded-[6px] bg-primary-color hover:bg-primary-color/80 px-4 w-auto"
+          className=" rounded-[6px] bg-accent hover:bg-accent text-white px-4 w-auto"
         >
           Export Excel
         </Button>
-        
       </div>
     </section>
   );

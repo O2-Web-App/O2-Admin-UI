@@ -19,7 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ColumnCategory } from "./ColumnCategory";
 
 import {
@@ -32,42 +32,41 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useGetAllCategoriesQuery } from "@/redux/service/category";
-import { CategoryType, Subcategory } from "@/types/category";
-import HeaderTable from "../HeaderTable";
+import {
+  useCreateCategoryMutation,
+  useCreateSubCategoryMutation,
+  useGetCategoryByUuidQuery,
+} from "@/redux/service/category";
+import { toast } from "sonner";
 import { Pagination } from "../Pagination";
 import { Button } from "../ui/button";
-import TabCategory from "./TabCategory";
-import { useCreateCategoryMutation } from "@/redux/service/category";
-import { toast } from "sonner";
-export function DataTableCategoryComponent() {
+export function DataTableCategoryComponent({ uuid }: { uuid: string }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
-  const [categoryData, setCategoryData] = useState<Subcategory[]>([]);
-  const [categoryName, setCategoryName] = useState("");
-
-  // create category
-  const [createCategory] = useCreateCategoryMutation();
+  const [subCategoryName, setSubCategoryName] = useState("");
 
   // get all categories
-  const { data, isLoading } = useGetAllCategoriesQuery({});
-  const result = data?.data || [];
+  const { data, isLoading, isFetching } = useGetCategoryByUuidQuery({
+    uuid: uuid,
+  });
 
-  useEffect(() => {
-    if (result?.length > 0) {
-      const allSubcategories = result.flatMap(
-        (item: CategoryType) => item?.subcategories || []
-      );
-      setCategoryData(allSubcategories);
-    }
-  }, [result]);
+  const result = data?.data?.subcategories || [];
+
+  const paginatedData = useMemo(
+    () =>
+      result.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      ),
+    [currentPage, itemsPerPage]
+  );
 
   const table = useReactTable({
-    data: categoryData,
+    data: result,
     columns: ColumnCategory,
 
     onColumnFiltersChange: setColumnFilters,
@@ -84,35 +83,26 @@ export function DataTableCategoryComponent() {
       rowSelection,
     },
   });
-  const paginatedData = useMemo(
-    () =>
-      categoryData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ),
-    [currentPage, itemsPerPage]
-  );
 
-  const handleCreateCategory = async () => {
-    if (categoryName.trim() === "")
-      toast.error("Category is Require", {
-        style: {
-          background: "#bb2124",
-          color: "#fff",
-        },
-      });
+  // redux creat sub category
+  const [createSubCategory] = useCreateSubCategoryMutation();
 
+  const handleCreateSubCategory = async () => {
     try {
-      const response = await createCategory({ name: categoryName });
+      const response = await createSubCategory({
+        name: subCategoryName,
+        parent_uuid: uuid,
+      });
       if (response.data) {
-        toast.success("Category create successfully", {
+        toast.success("SubCategory create successfully", {
           style: {
             background: "#22bb33",
             color: "#fff",
           },
         });
+        setSubCategoryName("");
       } else {
-        toast.error("Failed to create category", {
+        toast.error("Failed to create SubCategory", {
           style: {
             background: "#bb2124",
             color: "#fff",
@@ -120,24 +110,18 @@ export function DataTableCategoryComponent() {
         });
       }
     } catch (error) {
-      toast.error("Something went wrong ", {
+      toast.error("Something Went Wrong", {
         style: {
           background: "#bb2124",
+          color: "#fff",
         },
       });
     }
-
-    setCategoryName(""); // Clear input after action
   };
 
   return (
     <section className="w-full flex flex-col">
-      <HeaderTable data={[]} title="CATEGORY" />
-
-      <div className="mt-5 ml-6">
-        <TabCategory result={result} />
-      </div>
-      <section className="w-full bg-white p-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
+      <section className="w-full bg-white py-10 pr-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
             placeholder="Search by Subcategory name"
@@ -147,38 +131,40 @@ export function DataTableCategoryComponent() {
             }
             className="w-full border-[1px] h-[50px] text-md md:text-lg bg-white border-light-border-color rounded-[6px] placeholder:text-gray-400 text-primary-color-text dark:backdrop-blur dark:bg-opacity-0 dark:text-secondary-color-text"
           />
-          {/* create Category */}
 
+          {/* create sub category  */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="text-white bg-primary rounded-[6px] h-[50px] px-4 w-auto">
-                Create Category
+                Create SubCategory
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Create Product Category</AlertDialogTitle>
+                <AlertDialogTitle>Create Product SubCategory</AlertDialogTitle>
               </AlertDialogHeader>
 
               {/* 🧾 Input form */}
               <div className="flex flex-col space-y-2">
                 <label htmlFor="category" className="text-sm font-medium">
-                  Category Name
+                  SubCategory Name
                 </label>
                 <Input
                   id="category"
                   placeholder="Enter category name"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
+                  value={subCategoryName}
+                  onChange={(e) => setSubCategoryName(e.target.value)}
                   className="h-[45px]"
                 />
               </div>
 
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel onClick={() => setSubCategoryName("")}>
+                  Cancel
+                </AlertDialogCancel>
                 <AlertDialogAction
                   className="text-white bg-primary"
-                  onClick={handleCreateCategory}
+                  onClick={() => handleCreateSubCategory()}
                 >
                   Create
                 </AlertDialogAction>
@@ -248,7 +234,7 @@ export function DataTableCategoryComponent() {
           )}
         </div>
         <Pagination
-          totalItems={categoryData.length}
+          totalItems={result.length}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={setCurrentPage}

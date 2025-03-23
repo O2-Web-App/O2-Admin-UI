@@ -1,40 +1,81 @@
 "use client";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useDeleteCategoryMutation } from "@/redux/service/category";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetAllCategoriesQuery,
+  useUpdateCategoryNameByUuidMutation,
+} from "@/redux/service/category";
 import { CategoryType } from "@/types/category";
-import { TiDeleteOutline } from "react-icons/ti";
+import { TabsContent } from "@radix-ui/react-tabs";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-export default function TabCategory({
-  result,
-}: {
-  result: CategoryType[];
-}) {
+import { DataTableCategoryComponent } from "./data-table-category";
+export default function TabCategory() {
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
+    XLSX.writeFile(wb, "user_profiles.xlsx");
+  };
+
+  // state hold user input
+  const [categoryName, setCategoryName] = useState("");
+
+  const [activeTab, setActiveTab] = useState("");
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  // get all categories
+  const { data } = useGetAllCategoriesQuery({});
+
+  const result = data?.data || [];
+
+  useEffect(() => {
+    if (result.length > 0) {
+      setActiveTab(result[0].name);
+    }
+  }, [result]);
+
   // delete category by uuid
   const [deleteCategory] = useDeleteCategoryMutation();
 
-  const handleDeleteCategory = async (uuid: string) => {
-    const response = await deleteCategory(uuid);
+  // create category
+  const [createCategory] = useCreateCategoryMutation();
+
+  const handleCreateCategory = async () => {
+    if (categoryName.trim() === "")
+      toast.error("Category is Require", {
+        style: {
+          background: "#bb2124",
+          color: "#fff",
+        },
+      });
+
     try {
+      const response = await createCategory({ name: categoryName });
       if (response.data) {
-        toast.success("Category deleted successfully", {
+        toast.success("Category create successfully", {
           style: {
             background: "#22bb33",
             color: "#fff",
           },
         });
       } else {
-        toast.error("Failed to delete category", {
+        toast.error("Failed to create category", {
           style: {
             background: "#bb2124",
             color: "#fff",
@@ -42,7 +83,68 @@ export default function TabCategory({
         });
       }
     } catch (error) {
-      toast.success("Something went wrong", {
+      toast.error("Something went wrong ", {
+        style: {
+          background: "#bb2124",
+        },
+      });
+    }
+
+    setCategoryName(""); // Clear input after action
+  };
+
+  // update category by uuid
+  const [updateCategory] = useUpdateCategoryNameByUuidMutation();
+
+  const handleDeleteCategory = async (uuid: string) => {
+    try {
+      const response = await deleteCategory(uuid);
+      if (response.data) {
+        toast.success("Category Deleted Successfully", {
+          style: {
+            background: "#22bb33",
+            color: "#fff",
+          },
+        });
+      } else {
+        toast.error("Failed To Delete Category", {
+          style: {
+            background: "#bb2124",
+            color: "#fff",
+          },
+        });
+      }
+    } catch (error) {
+      toast.success("Something Went Wrong", {
+        style: {
+          background: "#bb2124",
+          color: "#fff",
+        },
+      });
+    }
+  };
+
+  const handleUpdateCategoryName = async (uuid: string) => {
+    try {
+      const response = await updateCategory({ name: categoryName, uuid: uuid });
+      if (response.data) {
+        toast.success("Category Name Updated Successfully", {
+          style: {
+            background: "#22bb33",
+            color: "#fff",
+          },
+        });
+        setCategoryName("");
+      } else {
+        toast.error("Failed To Update Category Name", {
+          style: {
+            background: "#bb2124",
+            color: "#fff",
+          },
+        });
+      }
+    } catch (error) {
+      toast.success("Something Went Wrong", {
         style: {
           background: "#bb2124",
           color: "#fff",
@@ -52,39 +154,173 @@ export default function TabCategory({
   };
 
   return (
-    <Tabs defaultValue={result[0]?.name || ""}>
-      <TabsList>
-        {result?.map((item: CategoryType, index: number) => (
-          <TabsTrigger key={index} value={item?.name}>
-            {item?.name}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <TiDeleteOutline className="h-5 w-5 text-red-500 ml-5" />
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Are you sure want to delete this category?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the category.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDeleteCategory(item?.uuid)}
-                    className="text-white"
-                  >
-                    Continue
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
+    <div>
+      <div className="w-full flex justify-between ">
+        <h1 className="text-title-color ml-10 text-lg md:text-2xl xl:text-4xl font-bold dark:text-secondary-color-text mb-1 md:mb-2">
+          CATEGORY MANAGEMENT
+        </h1>
+
+        <div className="space-x-5 mr-10">
+          {/* create Category */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="rounded-[6px] bg-primary text-white px-4 w-auto">
+                Create Category
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Create Product Category</AlertDialogTitle>
+              </AlertDialogHeader>
+
+              {/* 🧾 Input form */}
+              <div className="flex flex-col space-y-2">
+                <label htmlFor="category" className="text-sm font-medium">
+                  Category Name
+                </label>
+                <Input
+                  id="category"
+                  placeholder="Enter category name"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  className="h-[45px]"
+                />
+              </div>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="text-white bg-primary"
+                  onClick={handleCreateCategory}
+                >
+                  Create
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          {/* export pdf */}
+          <Button
+            onClick={exportToExcel}
+            className=" rounded-[6px] bg-accent hover:bg-accent text-white px-4 w-auto"
+          >
+            Export Excel
+          </Button>
+        </div>
+      </div>
+      {result?.length > 0 ? (
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="ml-8 my-5"
+        >
+          <TabsList>
+            {result?.map((item: CategoryType, index: number) => (
+              <TabsTrigger key={index} value={item?.name}>
+                {item?.name}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="pl-5"
+                      onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                    >
+                      <div className="bg-accent text-white text-sm px-3 py-1 rounded-md  transition ">
+                        Action
+                      </div>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="flex flex-col space-y-4 w-[100px] p-3">
+                    {/* update category by name */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="text-white bg-primary rounded-[6px] py-1 px-4 w-auto">
+                          Update
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Update Product Category Name
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+
+                        {/* 🧾 Input form */}
+                        <div className="flex flex-col space-y-2">
+                          <label
+                            htmlFor="category"
+                            className="text-sm font-medium"
+                          >
+                            Category Name
+                          </label>
+                          <Input
+                            id="category"
+                            placeholder="Enter category name to update"
+                            value={categoryName}
+                            onChange={(e) => setCategoryName(e.target.value)}
+                            className="h-[45px]"
+                          />
+                        </div>
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel
+                            onClick={() => setCategoryName("")}
+                          >
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="text-white bg-primary"
+                            onClick={() => handleUpdateCategoryName(item.uuid)}
+                          >
+                            confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    {/* delete product */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <div className="bg-red-500 text-white px-3 py-2 rounded transition hover:bg-red-500">
+                          Delete
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure want to delete {item.name} category?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete the category.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>No</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteCategory(item?.uuid)}
+                            className="text-white"
+                          >
+                            Yes
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </PopoverContent>
+                </Popover>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {result?.map((item: CategoryType, index: number) => (
+            <TabsContent key={index} value={item?.name}>
+              <DataTableCategoryComponent uuid={item.uuid} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      ) : (
+        <div className=" h-screen flex justify-center items-center   w-full">
+          <p>No Data</p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -5,6 +5,7 @@ import { setUser } from "@/redux/features/user";
 import { useAppDispatch } from "@/redux/hooks";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -52,7 +53,6 @@ export default function LoginForm() {
 
       if (response.ok && result?.data?.access_token) {
         const { access_token, refresh_token } = result.data;
-
 
         // Store tokens in Redux
         dispatch(setAccessToken(access_token));
@@ -109,8 +109,14 @@ export default function LoginForm() {
           {/* Content */}
           <div className={styles.content}>
             <div className={styles.header}>
-              <h1 className={styles.title}>Admin Login</h1>
-              <p className={styles.subtitle}>Sign in to your admin dashboard</p>
+              <h1 className={styles.title}>CamO2 Login</h1>
+              <Image
+                src={"/logo.png"}
+                alt="logo"
+                width={100}
+                height={100}
+                className="rounded-full object-cover mx-auto mt-5"
+              />
             </div>
 
             <Formik
@@ -132,7 +138,7 @@ export default function LoginForm() {
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="admin@example.com"
+                        placeholder="user@example.com"
                         className={`${styles.input} ${
                           errors.email && touched.email ? styles.inputError : ""
                         }`}
