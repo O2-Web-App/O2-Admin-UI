@@ -1,3 +1,4 @@
+import { get } from "http";
 import { o2API } from "../api";
 
 export const userAPI = o2API.injectEndpoints({
@@ -28,6 +29,15 @@ export const userAPI = o2API.injectEndpoints({
       }),
       invalidatesTags: ["Users"],
     }),
+
+    // get curret user
+    getCurrentUser: builder.query({
+      query: () => ({
+        url: `api/users/current-user`,
+        method: "GET",
+      }),
+      providesTags: ["Users"],
+    }),
   }),
 });
 
@@ -35,4 +45,5 @@ export const {
   useGetAllUserQuery,
   useGetUserByUuidQuery,
   useCreateBlockUserByUuidMutation,
+  useGetCurrentUserQuery,
 } = userAPI;

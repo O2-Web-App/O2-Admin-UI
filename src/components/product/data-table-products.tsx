@@ -79,7 +79,7 @@ export function DataTableProductComponent() {
       <section className="w-full bg-white  rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
-            placeholder="Search by user name"
+            placeholder="Search by product name"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)

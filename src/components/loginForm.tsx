@@ -49,7 +49,6 @@ export default function LoginForm() {
 
       const result = await response.json();
       dispatch(setUser(result?.data?.user));
-      console.log("Login API Response:", result?.data?.user);
 
       if (response.ok && result?.data?.access_token) {
         const { access_token, refresh_token } = result.data;
@@ -62,13 +61,14 @@ export default function LoginForm() {
 
         // Save in localStorage for persistence
         localStorage.setItem("access_token", access_token);
-        router.push(`/`);
+
         toast.success("Login Successfully ", {
           style: {
             background: "#22bb33",
             color: "white",
           },
         });
+        router.push(`/`);
       } else {
         toast.success("Incorret Email or Password", {
           style: {

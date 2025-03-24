@@ -32,7 +32,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-
+import HeaderTable from "../HeaderTable";
 
 export function DataTableUserComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -66,7 +66,6 @@ export function DataTableUserComponent() {
     });
   }, [userData, selectedStatus]);
 
-
   const table = useReactTable({
     data: filteredData,
     columns: columnsUser,
@@ -88,7 +87,7 @@ export function DataTableUserComponent() {
 
   return (
     <section className="w-full flex flex-col">
-  
+      <HeaderTable data={userData} title="USER" />
       <section className="w-full bg-white p-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input

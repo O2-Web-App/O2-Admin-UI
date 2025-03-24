@@ -16,7 +16,7 @@ import {
   useGetAllCategoriesQuery,
   useUpdateCategoryNameByUuidMutation,
 } from "@/redux/service/category";
-import { CategoryType } from "@/types/category";
+import { CategoryType, Subcategory } from "@/types/category";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,13 +27,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { DataTableCategoryComponent } from "./data-table-category";
 export default function TabCategory() {
-  const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
-    XLSX.writeFile(wb, "user_profiles.xlsx");
-  };
-
   // state hold user input
   const [categoryName, setCategoryName] = useState("");
 
@@ -49,6 +42,38 @@ export default function TabCategory() {
       setActiveTab(result[0].name);
     }
   }, [result]);
+
+  // export to excel
+  const exportToExcel = () => {
+    // Assume `result` is your array of categories
+    const categoriesSheet = result.map((cat: CategoryType) => ({
+      UUID: cat.uuid,
+      Name: cat.name,
+      CreatedAt: cat.created_at,
+      UpdatedAt: cat.updated_at,
+    }));
+
+    // Flatten subcategories with parent info
+    const subcategoriesSheet = result.flatMap((cat: CategoryType) =>
+      cat.subcategories.map((sub: Subcategory) => ({
+        SubcategoryUUID: sub.uuid,
+        SubcategoryName: sub.name,
+        ParentCategory: cat.name,
+        CreatedAt: sub.created_at,
+        UpdatedAt: sub.updated_at,
+      }))
+    );
+
+    const wb = XLSX.utils.book_new();
+
+    const wsCategories = XLSX.utils.json_to_sheet(categoriesSheet);
+    const wsSubcategories = XLSX.utils.json_to_sheet(subcategoriesSheet);
+
+    XLSX.utils.book_append_sheet(wb, wsCategories, "Categories");
+    XLSX.utils.book_append_sheet(wb, wsSubcategories, "Subcategories");
+
+    XLSX.writeFile(wb, "Categories.xlsx");
+  };
 
   // delete category by uuid
   const [deleteCategory] = useDeleteCategoryMutation();

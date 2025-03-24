@@ -23,10 +23,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn, formatDateToUtcMidnight } from "@/lib/utils";
 import {
-  useCreateDiscountMutation,
-  useGetAllDiscountQuery,
-} from "@/redux/service/discount";
-import { DiscountType } from "@/types/discount";
+  useCreateCouponMutation,
+  useGetAllCouponQuery,
+} from "@/redux/service/coupon";
+import { CouponType } from "@/types/coupon";
 import {
   ColumnFiltersState,
   SortingState,
@@ -43,19 +43,19 @@ import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { Pagination } from "../Pagination";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { columnsDiscount } from "./ColumnDiscount";
-import { Pagination } from "../Pagination";
-export function DataTableDiscountComponent() {
-  // redux create discount
-  const [createDiscount] = useCreateDiscountMutation();
+import { columnsCoupon } from "./ColumnCoupon";
+export function DataTableCouponComponent() {
+  // redux create Coupon
+  const [createCoupon] = useCreateCouponMutation();
 
-  // state for discount input form
-  const [discountName, setDiscountName] = useState("");
-  const [discountDescription, setDiscountDescription] = useState("");
-  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
-
+  // state for Coupon input form
+  const [CouponName, setCouponName] = useState("");
+  const [couponPercentage, setCouponPercentage] = useState<number>(0);
+  const [maxUsage, setMaxUsage] = useState<number>(0);
+  const [userLimit, setUserLimit] = useState<number>(0);
   // select data
   const [startedDate, setStartedDate] = useState<Date>();
 
@@ -70,19 +70,19 @@ export function DataTableDiscountComponent() {
   const [itemsPerPage, setItemsPerPage] = useState(15);
 
   // get all discount
-  const { data: disocunt, isLoading } = useGetAllDiscountQuery({
+  const { data: coupon, isLoading } = useGetAllCouponQuery({
     pages: currentPage,
     per_page: itemsPerPage,
   });
 
   // Use static data instead of API call
-  const discountData: DiscountType[] = disocunt?.data?.data;
+  const couponData: CouponType[] = coupon?.data?.data;
 
-  const pagination = disocunt?.data.metadata;
+  const pagination = coupon?.data.metadata;
 
   const table = useReactTable({
-    data: discountData,
-    columns: columnsDiscount,
+    data: couponData,
+    columns: columnsCoupon,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -100,31 +100,32 @@ export function DataTableDiscountComponent() {
   });
 
   const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(discountData);
+    const ws = XLSX.utils.json_to_sheet(couponData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "discountData");
-    XLSX.writeFile(wb, "discountData.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "coupon");
+    XLSX.writeFile(wb, "coupon.xlsx");
   };
 
   // function create discount
   const handleCreatDiscount = async () => {
     try {
-      const response = await createDiscount({
-        name: discountName,
-        description: discountDescription,
-        discount_percentage: discountPercentage,
+      const response = await createCoupon({
+        code: CouponName,
+        max_usage: maxUsage,
+        user_limit: userLimit,
+        discount_percentage: couponPercentage,
         start_date: formatDateToUtcMidnight(startedDate ?? new Date()) || "",
         end_date: formatDateToUtcMidnight(endDate ?? new Date()) || "",
       });
       if (response.data) {
-        toast.success("Discount Create Successfully", {
+        toast.success("Coupon Create Successfully", {
           style: {
             background: "#22bb33",
             color: "#fff",
           },
         });
       } else {
-        toast.error("Failed To Create Discount ", {
+        toast.error("Failed To Create Coupon ", {
           style: {
             background: "#bb2124",
             color: "#fff",
@@ -145,7 +146,7 @@ export function DataTableDiscountComponent() {
     <section className="w-full flex flex-col">
       <div className="w-full flex justify-between ">
         <h1 className="text-title-color ml-10 text-lg md:text-2xl xl:text-4xl font-bold dark:text-secondary-color-text mb-1 md:mb-2">
-          DISCOUNT MANAGEMENT
+          COUPON MANAGEMENT
         </h1>
 
         <div className="space-x-5 mr-10">
@@ -153,56 +154,66 @@ export function DataTableDiscountComponent() {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="rounded-[6px] bg-primary text-white px-4 w-auto">
-                Create Discount
+                Create Coupon
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Create Discount</AlertDialogTitle>
+                <AlertDialogTitle>Create Coupon</AlertDialogTitle>
               </AlertDialogHeader>
 
               {/* 🧾 Input form */}
               <div className="flex flex-col space-y-2">
-                <label htmlFor="discontName" className="text-sm font-medium">
-                  Discount Name
+                <label htmlFor="CouponCode" className="text-sm font-medium">
+                  Coupon Code
                 </label>
                 <Input
-                  id="discontName"
-                  placeholder="Enter discont Name"
-                  value={discountName}
-                  onChange={(e) => setDiscountName(e.target.value)}
+                  id="CouponCode"
+                  placeholder="Enter Coupon Code"
+                  value={CouponName}
+                  onChange={(e) => setCouponName(e.target.value)}
                   className="h-[45px]"
                 />
               </div>
               {/* discount description */}
               <div className="flex flex-col space-y-2">
-                <label htmlFor="DiscountDesc" className="text-sm font-medium">
-                  Discount Description
+                <label htmlFor="CouponDisPer" className="text-sm font-medium">
+                  Coupon Discount Percentage
                 </label>
                 <Input
-                  id="DiscountDesc"
-                  placeholder="Enter Discount Description"
-                  value={discountDescription}
-                  onChange={(e) => setDiscountDescription(e.target.value)}
+                  id="CouponDisPer"
+                  placeholder="Enter Discount Coupon"
+                  value={couponPercentage}
+                  onChange={(e) => setCouponPercentage(Number(e.target.value))}
                   className="h-[45px]"
                 />
               </div>
-              {/* discount discount_percentage */}
+              {/* coupon maxUsage  */}
               <div className="flex flex-col space-y-2">
-                <label htmlFor="DiscountPer" className="text-sm font-medium">
-                  Discount Percentage
+                <label htmlFor="CouponMaxUsage" className="text-sm font-medium">
+                  Coupon MaxUsage
                 </label>
                 <Input
-                  id="DiscountPer"
-                  placeholder="Enter Discount Percentage"
-                  value={discountPercentage}
-                  onChange={(e) => {
-                    const parsed = Number(e.target.value);
-                    // Only update if it's a valid number
-                    if (!isNaN(parsed)) {
-                      setDiscountPercentage(parsed);
-                    }
-                  }}
+                  id="CouponMaxUsage"
+                  placeholder="Enter Coupon Max Usage"
+                  value={maxUsage}
+                  onChange={(e) => setMaxUsage(Number(e.target.value))}
+                  className="h-[45px]"
+                />
+              </div>
+              {/* coupon user_limit  */}
+              <div className="flex flex-col space-y-2">
+                <label
+                  htmlFor="CouponUserLimit"
+                  className="text-sm font-medium"
+                >
+                  Coupon User Limit
+                </label>
+                <Input
+                  id="CouponUserLimit"
+                  placeholder="Enter Coupon User Limit"
+                  value={userLimit}
+                  onChange={(e) => setUserLimit(Number(e.target.value))}
                   className="h-[45px]"
                 />
               </div>
@@ -283,10 +294,10 @@ export function DataTableDiscountComponent() {
       <section className="w-full bg-white p-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
-            placeholder="Search by discount name"
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            placeholder="Search by coupon code"
+            value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.getColumn("code")?.setFilterValue(event.target.value)
             }
             className="w-full border-[1px] h-[50px] text-md md:text-lg bg-white border-light-border-color rounded-[6px] placeholder:text-gray-400 text-primary-color-text dark:backdrop-blur dark:bg-opacity-0 dark:text-secondary-color-text"
           />

@@ -19,6 +19,7 @@ import { Button } from "../ui/button";
 export const ColumnCategory: ColumnDef<Subcategory>[] = [
   {
     accessorKey: "name",
+    enableSorting: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SUBCATEGORIES" />
     ),
@@ -34,6 +35,7 @@ export const ColumnCategory: ColumnDef<Subcategory>[] = [
 
   {
     accessorKey: "created_at",
+    enableSorting: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="CREATED AT" />
     ),
@@ -45,6 +47,7 @@ export const ColumnCategory: ColumnDef<Subcategory>[] = [
   },
   {
     accessorKey: "updated_at",
+    enableSorting: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="UPDATED AT" />
     ),

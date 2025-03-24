@@ -19,7 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ColumnCategory } from "./ColumnCategory";
 
 import {
@@ -33,7 +33,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  useCreateCategoryMutation,
   useCreateSubCategoryMutation,
   useGetCategoryByUuidQuery,
 } from "@/redux/service/category";
@@ -50,25 +49,20 @@ export function DataTableCategoryComponent({ uuid }: { uuid: string }) {
   const [subCategoryName, setSubCategoryName] = useState("");
 
   // get all categories
-  const { data, isLoading, isFetching } = useGetCategoryByUuidQuery({
+  const { data, isLoading } = useGetCategoryByUuidQuery({
     uuid: uuid,
+    pages: currentPage,
+    per_page: itemsPerPage,
   });
 
-  const result = data?.data?.subcategories || [];
+  const result = data?.data?.subcategories?.data || [];
 
-  const paginatedData = useMemo(
-    () =>
-      result.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ),
-    [currentPage, itemsPerPage]
-  );
+  const pagination = data?.data?.subcategories?.metadata;
 
   const table = useReactTable({
     data: result,
     columns: ColumnCategory,
-
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -124,7 +118,7 @@ export function DataTableCategoryComponent({ uuid }: { uuid: string }) {
       <section className="w-full bg-white py-10 pr-10 rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
-            placeholder="Search by Subcategory name"
+            placeholder="Search by subcategory name"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
@@ -234,7 +228,7 @@ export function DataTableCategoryComponent({ uuid }: { uuid: string }) {
           )}
         </div>
         <Pagination
-          totalItems={result.length}
+          totalItems={pagination?.total_items} // real total from API
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={setCurrentPage}

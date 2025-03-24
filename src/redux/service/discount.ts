@@ -34,9 +34,9 @@ export const discountAPI = o2API.injectEndpoints({
     }),
 
     // get all discount
-    getAllDiscount: builder.query({
-      query: () => ({
-        url: `api/discounts`,
+    getAllDiscount: builder.query<any, { pages: number; per_page: number }>({
+      query: ({ pages, per_page }) => ({
+        url: `api/discounts?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Discount"],

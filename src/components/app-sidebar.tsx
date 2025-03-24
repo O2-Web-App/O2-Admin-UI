@@ -1,193 +1,138 @@
-"use client"
+"use client";
 
-import * as React from "react"
 import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
-    Command,
-    Component,
-    GalleryVerticalEnd,
-    LayoutDashboard,
-    Percent,
-    Settings2,
-    Shapes, ShoppingBasket,
-    SquareTerminal,
-    User
-} from "lucide-react"
+  AudioWaveform,
+  Command,
+  Component,
+  GalleryVerticalEnd,
+  LayoutDashboard,
+  Percent,
+  Shapes,
+  ShoppingBasket,
+  User,
+} from "lucide-react";
+import * as React from "react";
 
-import {NavMain} from "@/components/nav-main"
-import {NavProjects} from "@/components/nav-projects"
-import {NavUser} from "@/components/nav-user"
-import {TeamSwitcher} from "@/components/team-switcher"
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarRail,
-} from "@/components/ui/sidebar"
-
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { setAccessToken } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 // This is sample data.
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  teams: [
+    {
+      name: "Acme Inc",
+      logo: GalleryVerticalEnd,
+      plan: "Enterprise",
     },
-    teams: [
+    {
+      name: "Acme Corp.",
+      logo: AudioWaveform,
+      plan: "Startup",
+    },
+    {
+      name: "Evil Corp.",
+      logo: Command,
+      plan: "Free",
+    },
+  ],
+
+  projects: [
+    {
+      name: "Dashboard",
+      url: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "User",
+      url: "/user",
+      icon: User,
+    },
+    {
+      name: "Category",
+      url: "/category",
+      icon: Shapes,
+    },
+    {
+      name: "Coupon",
+      url: "/coupon",
+      icon: Component,
+    },
+    {
+      name: "Discount",
+      url: "/discount",
+      icon: Percent,
+    },
+    {
+      name: "Products",
+      url: "/product",
+      icon: ShoppingBasket,
+    },
+  ],
+};
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const router = useRouter();
+
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_O2_API_URL}api/logout`,
         {
-            name: "Acme Inc",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-        {
-            name: "Acme Corp.",
-            logo: AudioWaveform,
-            plan: "Startup",
-        },
-        {
-            name: "Evil Corp.",
-            logo: Command,
-            plan: "Free",
-        },
-    ],
-    navMain: [
-        {
-            title: "Playground",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: true,
-            items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Models",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    projects: [
-        {
-            name: "Dashboard",
-            url: "/",
-            icon: LayoutDashboard,
-        },
-        {
-            name: "User",
-            url: "/user",
-            icon: User,
-        },
-        {
-            name: "Category",
-            url: "/category",
-            icon: Shapes,
-        },
-        {
-            name: "Coupon",
-            url: "/coupon",
-            icon: Component,
-        },
-        {
-            name: "Discount",
-            url: "/discount",
-            icon: Percent,
-        },
-        {
-            name: "Products",
-            url: "/product",
-            icon: ShoppingBasket
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
-    ],
-}
+      );
 
-export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
-    return (
-        <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
-                <TeamSwitcher teams={data.teams}/>
-            </SidebarHeader>
-            <SidebarContent className={` scrollbar-hide`}>
-                <NavProjects projects={data.projects}/>
-                <NavMain items={data.navMain}/>
+      if (response.ok) {
+        dispatch(setAccessToken(null));
+        localStorage.removeItem("access_token");
 
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={data.user}/>
-            </SidebarFooter>
-            <SidebarRail/>
-        </Sidebar>
-    )
+        // Redirect to login
+        router.push("/login");
+      } else {
+        console.error("Logout failed:", await response.text());
+      }
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
+
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <NavUser />
+      </SidebarHeader>
+      <SidebarContent className={` scrollbar-hide`}>
+        <NavProjects projects={data.projects} />
+      </SidebarContent>
+      <SidebarFooter>
+        <div
+          onClick={() => handleLogout()}
+          className="w-full bg-accent py-2 cursor-pointer text-center rounded-md text-white"
+        >
+          Log out
+        </div>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
 }

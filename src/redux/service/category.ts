@@ -11,9 +11,12 @@ export const categoryAPI = o2API.injectEndpoints({
       providesTags: ["Category"],
     }),
 
-    getCategoryByUuid: builder.query<any, { uuid: string }>({
-      query: ({ uuid }) => ({
-        url: `api/categories/${uuid}`,
+    getCategoryByUuid: builder.query<
+      any,
+      { uuid: string; pages: number; per_page: number }
+    >({
+      query: ({ uuid, pages, per_page }) => ({
+        url: `api/categories/${uuid}?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Category"],
