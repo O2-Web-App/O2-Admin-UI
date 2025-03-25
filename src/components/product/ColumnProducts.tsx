@@ -13,7 +13,7 @@ export const ColumnProducts: ColumnDef<ProductType>[] = [
 
     cell: ({ row }) => (
       <div className="flex items-center">
-        <Image
+        <img
           className="rounded-[6px] h-auto w-[40px]"
           width={70}
           height={10}

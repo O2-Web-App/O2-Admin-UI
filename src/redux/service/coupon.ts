@@ -22,7 +22,7 @@ export const couponAPI = o2API.injectEndpoints({
         start_date,
         end_date,
       }) => ({
-        url: `api/coupons`,
+        url: `/api/coupons`,
         method: "POST",
         body: {
           code,
@@ -39,7 +39,7 @@ export const couponAPI = o2API.injectEndpoints({
     // get all Coupon
     getAllCoupon: builder.query<any, { pages: number; per_page: number }>({
       query: ({ pages, per_page }) => ({
-        url: `api/coupons?page=${pages}&per_page=${per_page}`,
+        url: `/api/coupons?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Coupon"],
@@ -48,7 +48,7 @@ export const couponAPI = o2API.injectEndpoints({
     // update Coupon name
     updateCouponName: builder.mutation<any, { uuid: string; name: string }>({
       query: ({ uuid, name }) => ({
-        url: `api/coupons/${uuid}`,
+        url: `/api/coupons/${uuid}`,
         method: "PUT",
         body: {
           name,
@@ -60,7 +60,7 @@ export const couponAPI = o2API.injectEndpoints({
     // delete Coupon
     deleteCoupon: builder.mutation<any, { uuid: string }>({
       query: ({ uuid }) => ({
-        url: `api/coupons/${uuid}`,
+        url: `/api/coupons/${uuid}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Coupon"],

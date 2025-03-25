@@ -20,7 +20,7 @@ export const discountAPI = o2API.injectEndpoints({
         start_date,
         end_date,
       }) => ({
-        url: `api/discounts`,
+        url: `/api/discounts`,
         method: "POST",
         body: {
           name,
@@ -36,7 +36,7 @@ export const discountAPI = o2API.injectEndpoints({
     // get all discount
     getAllDiscount: builder.query<any, { pages: number; per_page: number }>({
       query: ({ pages, per_page }) => ({
-        url: `api/discounts?page=${pages}&per_page=${per_page}`,
+        url: `/api/discounts?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Discount"],
@@ -45,7 +45,7 @@ export const discountAPI = o2API.injectEndpoints({
     // update discount name
     updateDiscountName: builder.mutation<any, { uuid: string; name: string }>({
       query: ({ uuid, name }) => ({
-        url: `api/discounts/${uuid}`,
+        url: `/api/discounts/${uuid}`,
         method: "PUT",
         body: {
           name,
@@ -57,7 +57,7 @@ export const discountAPI = o2API.injectEndpoints({
     // delete discount
     deleteDiscount: builder.mutation<any, { uuid: string }>({
       query: ({ uuid }) => ({
-        url: `api/discounts/${uuid}`,
+        url: `/api/discounts/${uuid}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Discount"],

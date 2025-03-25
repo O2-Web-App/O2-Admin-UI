@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { useCreateBlockUserByUuidMutation } from "@/redux/service/user";
 import { toast } from "sonner";
 const imageBaseUrl = process.env.NEXT_PUBLIC_O2_API_URL || "/place-holder.jpg";
+
 export const columnsUser: ColumnDef<UserType>[] = [
   {
     accessorKey: "name",
@@ -15,24 +16,26 @@ export const columnsUser: ColumnDef<UserType>[] = [
       <DataTableColumnHeader column={column} title="USER NAME" />
     ),
 
-    cell: ({ row }) => (
-      <div className="flex items-center">
-        <Image
-          className="rounded-[6px] h-auto w-[40px]"
-          width={70}
-          height={10}
-          src={
-            row.original?.avatar
-              ? imageBaseUrl + row.original.avatar
-              : "/place-holder.jpg"
-          }
-          alt="image"
-        />
-        <p className="px-2 text-description-color justify-center text-[10px] md:text-sm xl:text-base dark:text-dark-description-color">
-          {row.original?.name ?? "N/A"}
-        </p>
-      </div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center">
+          <img
+            className="rounded-[6px] h-auto w-[40px]"
+            width={70}
+            height={10}
+            src={
+              row.original?.avatar
+                ? imageBaseUrl + row?.original?.avatar
+                : "/place-holder.jpg"
+            }
+            alt="image"
+          />
+          <p className="px-2 text-description-color justify-center text-[10px] md:text-sm xl:text-base dark:text-dark-description-color">
+            {row.original?.name ?? "N/A"}
+          </p>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "email",

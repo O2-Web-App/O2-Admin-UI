@@ -5,7 +5,7 @@ export const categoryAPI = o2API.injectEndpoints({
     // get all category
     getAllCategories: builder.query({
       query: () => ({
-        url: `api/categories`,
+        url: `/api/categories`,
         method: "GET",
       }),
       providesTags: ["Category"],
@@ -16,7 +16,7 @@ export const categoryAPI = o2API.injectEndpoints({
       { uuid: string; pages: number; per_page: number }
     >({
       query: ({ uuid, pages, per_page }) => ({
-        url: `api/categories/${uuid}?page=${pages}&per_page=${per_page}`,
+        url: `/api/categories/${uuid}?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Category"],
@@ -25,7 +25,7 @@ export const categoryAPI = o2API.injectEndpoints({
     // delete category by uuid
     deleteCategory: builder.mutation({
       query: (uuid: string) => ({
-        url: `api/categories/${uuid}`,
+        url: `/api/categories/${uuid}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Category"],
@@ -34,7 +34,7 @@ export const categoryAPI = o2API.injectEndpoints({
     // create category
     createCategory: builder.mutation({
       query: (name: any) => ({
-        url: `api/categories`,
+        url: `/api/categories`,
         method: "POST",
         body: name,
       }),
@@ -47,7 +47,7 @@ export const categoryAPI = o2API.injectEndpoints({
       { name: string; parent_uuid: string }
     >({
       query: ({ name, parent_uuid }) => ({
-        url: `api/categories/subcategories`,
+        url: `/api/categories/subcategories`,
         method: "POST",
         body: { name, parent_uuid },
       }),
@@ -60,7 +60,7 @@ export const categoryAPI = o2API.injectEndpoints({
       { name: string; uuid: string }
     >({
       query: ({ name, uuid }) => ({
-        url: `api/categories/${uuid}`,
+        url: `/api/categories/${uuid}`,
         method: "PUT",
         body: { name },
       }),

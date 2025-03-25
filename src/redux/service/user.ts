@@ -1,4 +1,3 @@
-import { get } from "http";
 import { o2API } from "../api";
 
 export const userAPI = o2API.injectEndpoints({
@@ -6,7 +5,7 @@ export const userAPI = o2API.injectEndpoints({
     // get all user
     getAllUser: builder.query<any, { pages: number; per_page: number }>({
       query: ({ pages, per_page }) => ({
-        url: `api/users?page=${pages}&per_page=${per_page}`,
+        url: `/api/users?page=${pages}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Users"],
@@ -15,7 +14,7 @@ export const userAPI = o2API.injectEndpoints({
     // get user by uuid
     getUserByUuid: builder.query<any, { uuid: string }>({
       query: ({ uuid }) => ({
-        url: `api/users/${uuid}`,
+        url: `/api/users/${uuid}`,
         method: "GET",
       }),
       providesTags: ["Users"],
@@ -24,7 +23,7 @@ export const userAPI = o2API.injectEndpoints({
     // block and unblock user by uuid
     createBlockUserByUuid: builder.mutation<any, { uuid: string }>({
       query: ({ uuid }) => ({
-        url: `api/users/block/${uuid}`,
+        url: `/api/users/block/${uuid}`,
         method: "PATCH",
       }),
       invalidatesTags: ["Users"],
@@ -33,10 +32,37 @@ export const userAPI = o2API.injectEndpoints({
     // get curret user
     getCurrentUser: builder.query({
       query: () => ({
-        url: `api/users/current-user`,
+        url: `/api/users/current-user`,
         method: "GET",
       }),
       providesTags: ["Users"],
+    }),
+
+    // update user profile
+    updateUserProfile: builder.mutation<
+      any,
+      {
+        avatar: string;
+        name: string;
+        address: string;
+        phone_number: string;
+        bio: string;
+        date_of_birth: string;
+      }
+    >({
+      query: ({ name, address, bio, date_of_birth, phone_number, avatar }) => ({
+        url: `/api/users/current-user`,
+        method: "PATCH",
+        body: {
+          avatar,
+          name,
+          address,
+          bio,
+          date_of_birth,
+          phone_number,
+        },
+      }),
+      invalidatesTags: ["Users"],
     }),
   }),
 });
@@ -46,4 +72,5 @@ export const {
   useGetUserByUuidQuery,
   useCreateBlockUserByUuidMutation,
   useGetCurrentUserQuery,
+  useUpdateUserProfileMutation,
 } = userAPI;

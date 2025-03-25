@@ -10,7 +10,9 @@ import {
   Shapes,
   ShoppingBasket,
   User,
+  Rss,
 } from "lucide-react";
+
 import * as React from "react";
 
 import { NavProjects } from "@/components/nav-projects";
@@ -80,6 +82,11 @@ const data = {
       name: "Products",
       url: "/product",
       icon: ShoppingBasket,
+    },
+    {
+      name: "Blog",
+      url: "/blog",
+      icon: Rss,
     },
   ],
 };

@@ -101,7 +101,15 @@ const baseQueryWithReAuth = async (
 
 // ✅ Create the API service with Redux Toolkit's `createApi`
 export const o2API = createApi({
-  tagTypes: ["Users", "Products", "Category", "Discount", "Coupon"],
+  tagTypes: [
+    "Users",
+    "Products",
+    "Category",
+    "Discount",
+    "Coupon",
+    "userProfile",
+    "Blog",
+  ],
   reducerPath: "o2API",
   baseQuery: baseQueryWithReAuth, // ✅ Use the custom base query with re-authentication
   endpoints: () => ({}),

@@ -5,7 +5,7 @@ export const chartAPI = o2API.injectEndpoints({
     // get all user
     getChartUser: builder.query({
       query: () => ({
-        url: `api/admin/dashboard-stats`,
+        url: `/api/admin/dashboard-stats`,
         method: "GET",
       }),
     }),

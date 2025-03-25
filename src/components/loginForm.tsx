@@ -39,7 +39,7 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_O2_API_URL}api/login`,
+        `${process.env.NEXT_PUBLIC_O2_API_URL}/api/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

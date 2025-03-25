@@ -5,7 +5,7 @@ export const productAPI = o2API.injectEndpoints({
     // get all user
     getAllProduct: builder.query({
       query: () => ({
-        url: `api/products`,
+        url: `/api/products`,
         method: "GET",
       }),
       providesTags: ["Products"],
