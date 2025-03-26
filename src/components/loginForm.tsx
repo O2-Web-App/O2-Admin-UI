@@ -2,7 +2,7 @@
 import styles from "@/app/(auth)/login/login.module.css";
 import { setAccessToken } from "@/redux/features/auth/authSlice";
 import { setUser } from "@/redux/features/user";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
@@ -39,7 +39,7 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_O2_API_URL}/api/login`,
+        `${process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST}login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -48,19 +48,14 @@ export default function LoginForm() {
       );
 
       const result = await response.json();
+
       dispatch(setUser(result?.data?.user));
 
-      if (response.ok && result?.data?.access_token) {
-        const { access_token, refresh_token } = result.data;
+      if (response.ok) {
+        const access_token = result?.accessToken;
 
         // Store tokens in Redux
         dispatch(setAccessToken(access_token));
-
-        // Store refresh token in cookies
-        document.cookie = `refresh_token=${refresh_token}; path=/; Secure; HttpOnly; SameSite=Strict`;
-
-        // Save in localStorage for persistence
-        localStorage.setItem("access_token", access_token);
 
         toast.success("Login Successfully ", {
           style: {
@@ -89,7 +84,8 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
-
+  const tokenData = useAppSelector((state) => state.token.token);
+  console.log(tokenData);
   return (
     <div className={styles.loginContainer}>
       <div
