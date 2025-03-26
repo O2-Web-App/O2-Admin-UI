@@ -37,9 +37,9 @@ export const couponAPI = o2API.injectEndpoints({
     }),
 
     // get all Coupon
-    getAllCoupon: builder.query<any, { pages: number; per_page: number }>({
-      query: ({ pages, per_page }) => ({
-        url: `/api/coupons?page=${pages}&per_page=${per_page}`,
+    getAllCoupon: builder.query<any, { page: number; per_page: number }>({
+      query: ({ page, per_page }) => ({
+        url: `/api/coupons?page=${page}&per_page=${per_page}`,
         method: "GET",
       }),
       providesTags: ["Coupon"],

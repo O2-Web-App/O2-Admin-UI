@@ -186,9 +186,17 @@ export const columnsTopBlog: ColumnDef<TopBlogType>[] = [
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger className="bg-accent px-3 rounded-md h-[40px] text-white">
-            {awardType === "" ? "Award" : awardType}
-          </DropdownMenuTrigger>
+          {row.original.is_awarded === true ? (
+            <div className="bg-secondary w-[100px] text-center rounded-md py-2 text-white">
+              {row.original.award_type}
+            </div>
+          ) : (
+            <DropdownMenuTrigger className="bg-accent w-[80px] rounded-md h-[40px] text-white">
+              {row.original.award_type === ""
+                ? "Rank"
+                : row.original.award_type}
+            </DropdownMenuTrigger>
+          )}
           <DropdownMenuContent>
             <div className="flex"></div>
             <DropdownMenuLabel className="text-accent">
@@ -239,9 +247,18 @@ export const columnsTopBlog: ColumnDef<TopBlogType>[] = [
       const dispatch = useAppDispatch();
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger className="bg-accent w-[80px] rounded-md h-[40px] text-white">
-            {row.original.award_rank === "" ? "Rank" : row.original.award_rank}
-          </DropdownMenuTrigger>
+          {row.original.is_awarded === true ? (
+            <div className="bg-secondary w-[70px] text-center rounded-md py-2 text-white">
+              {row.original.award_rank}
+            </div>
+          ) : (
+            <DropdownMenuTrigger className="bg-accent w-[80px] rounded-md h-[40px] text-white">
+              {row.original.award_rank === ""
+                ? "Rank"
+                : row.original.award_rank}
+            </DropdownMenuTrigger>
+          )}
+
           <DropdownMenuContent>
             <DropdownMenuLabel className="text-accent">
               Award Rank

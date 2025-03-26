@@ -1,18 +1,15 @@
 export type ProductType = {
-  uuid: string;
-  category_name: string;
   name: string;
   description: string;
-  price: string; // Assuming price is a string, but it could be a number too.
-  discount_percentage: string; // Same as above, could be a number.
-  discounted_price: number;
+  category_uuid: string;
+  subcategory_uuid: string;
+  discount_uuid: string;
+
+  price: number;
   stock: number;
   is_preorder: boolean;
-  single_image: string;
-  multi_images: string[];
-  color: string;
-  size: string;
-  average_rating: number;
-  created_at: string | null; // Could be null if not set
-  updated_at: string | null; // Could be null if not set
+  preorder_duration: number | null;
+  expiration_date: string; // ISO date string, e.g., "2025-06-01"
+  multi_images: string[]; // Array of image URLs (as strings)
+  files: null;
 };

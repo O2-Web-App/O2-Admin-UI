@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
 
   // Return the access token and user data to the client-side
   // with the serialized refresh token as a cookie
+
   return NextResponse.json(
     {
       accessToken: accessToken,
