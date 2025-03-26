@@ -12,4 +12,7 @@ export type TopBlogType = {
   };
   tags: [];
   published_at: string;
+  is_awarded: boolean;
+  award_type: string;
+  award_rank: string;
 };

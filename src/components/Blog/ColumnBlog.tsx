@@ -18,17 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 export const columnsBlog: ColumnDef<BlogType>[] = [
   {
     accessorKey: "title",
@@ -143,48 +133,6 @@ export const columnsBlog: ColumnDef<BlogType>[] = [
         setBlogDetail(data?.data);
       };
 
-      // state for award
-      const [awardType, setAwardType] = useState<string>("");
-      const [awardRank, setAwardRank] = useState<string>("");
-      const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-
-      console.log("awardType", awardType);
-      console.log("awardRank", awardRank);
-
-      const [awardBlog] = useConfirmBlogAwardMutation();
-
-      const handleBlogAward = async (uuid: string) => {
-        try {
-          const response = await awardBlog({
-            uuid: uuid,
-            award_type: awardType,
-            award_rank: awardRank,
-          });
-          if (response.data) {
-            toast.success("Blog Award add successfully", {
-              style: {
-                background: "#22bb33",
-                color: "#fff",
-              },
-            });
-          } else {
-            toast.error("Failed to Award Blog", {
-              style: {
-                background: "#bb2124",
-                color: "#fff",
-              },
-            });
-          }
-        } catch (error) {
-          toast.error("Something Went Wrong", {
-            style: {
-              background: "#bb2124",
-              color: "#fff",
-            },
-          });
-        }
-      };
-
       return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
           <AlertDialogTrigger>
@@ -235,92 +183,10 @@ export const columnsBlog: ColumnDef<BlogType>[] = [
               <div className="w-full flex justify-between">
                 {/* title blog */}
                 <p className="text-title  font-medium">{blogDetail?.title}</p>
-                {/* award button */}
-                <DropdownMenu
-                  open={isDropDownOpen}
-                  onOpenChange={setIsDropDownOpen}
-                >
-                  <DropdownMenuTrigger className="bg-primary px-3 rounded-md h-[40px] text-white">
-                    Award
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <div className="flex"></div>
-                    <DropdownMenuLabel className="text-accent">
-                      Award Type
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setAwardType("best_content");
-                      }}
-                      className={` cursor-pointer ${
-                        awardType === "best_content"
-                          ? "bg-accent text-white"
-                          : "bg-white"
-                      }`}
-                    >
-                      best_content
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className={` cursor-pointer ${
-                        awardType === "most_viewed"
-                          ? "bg-accent text-white"
-                          : "bg-white"
-                      }`}
-                      onClick={() => setAwardType("most_viewed")}
-                    >
-                      most_viewed
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className={` cursor-pointer ${
-                        awardType === "most_liked"
-                          ? "bg-accent text-white"
-                          : "bg-white"
-                      }`}
-                      onClick={() => setAwardType("most_liked")}
-                    >
-                      most_liked
-                    </DropdownMenuItem>
-
-                    <DropdownMenuLabel className="text-accent">
-                      Award Rank
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className={`cursor-pointer ${
-                        awardRank === "1" ? "bg-accent text-white" : "bg-white"
-                      }`}
-                      onClick={() => setAwardRank("1")}
-                    >
-                      1
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className={`cursor-pointer ${
-                        awardRank === "2" ? "bg-accent text-white" : "bg-white"
-                      }`}
-                      onClick={() => setAwardRank("2")}
-                    >
-                      2
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className={`cursor-pointer ${
-                        awardRank === "3" ? "bg-accent text-white" : "bg-white"
-                      }`}
-                      onClick={() => setAwardRank("3")}
-                    >
-                      3
-                    </DropdownMenuItem>
-                    <button
-                      onClick={() => {
-                        handleBlogAward(row.original.uuid);
-                        setIsDropDownOpen(false);
-                      }}
-                      className="w-full px-3 py-1 bg-primary text-white rounded-md my-2"
-                    >
-                      Submit
-                    </button>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* public button */}
+                <button className="bg-primary px-3 h-[40px] text-white rounded-md ">
+                  Public
+                </button>
               </div>
               {/* publisted at  */}
               {blogDetail?.published_at && (

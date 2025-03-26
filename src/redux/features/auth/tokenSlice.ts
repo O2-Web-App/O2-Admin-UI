@@ -1,34 +1,23 @@
 // src/redux/feature/auth/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Tokens {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-}
-
-interface AuthState {
-  user: { id: number; email: string; username: string } | null;
-  tokens: Tokens | null;
-}
-
-const initialState: AuthState = {
-  user: null,
-  tokens: null,
+type AccessTokenState = {
+  token: string | null;
 };
 
+const initialState: AccessTokenState = {
+  token: null,
+};
 const tokenSlice = createSlice({
   name: "token",
   initialState,
   reducers: {
-    setAuthState(state, action: PayloadAction<AuthState>) {
-      state.user = action.payload.user;
-      state.tokens = action.payload.tokens;
+    setAuthState(state, action: PayloadAction<string>) {
+      state.token = action.payload;
     },
 
     logout(state) {
-      state.user = null;
-      state.tokens = null;
+      state.token = null;
     },
   },
 });
