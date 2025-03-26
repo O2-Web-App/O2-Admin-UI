@@ -8,94 +8,48 @@ import {
 import { RootState } from "./store";
 import { setAccessToken } from "./features/auth/authSlice";
 
-// ✅ BaseQueryArgs Type Definition
-type BaseQueryArgs = {
-  url: string;
-  method: string;
-  body?: unknown; // Define more precisely if needed
-  headers?: HeadersInit;
-};
-
-// ✅ Change to `Record<string, unknown>` instead of `{}` for better type safety
-type BaseQueryOptions = Record<string, unknown>;
-
 // ✅ Fetch Base Query with Authorization Header
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_O2_API_URL,
   prepareHeaders: (headers, { getState }) => {
-    let token = (getState() as RootState).auth.token;
-
-    // 🔥 Fallback to localStorage if Redux is empty (useful after page reload)
-    if (!token) {
-      token = localStorage.getItem("access_token") || "";
-    }
-
-    // console.log("🔑 Token Retrieved for API Call:", token); // Debugging
-
+    const token = (getState() as RootState).auth.token;
+    // const token = localStorage.getItem("accessToken");
+    // if we have a token, let's set the authorization header
     if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    } else {
-      console.warn("⚠️ No access token found in Redux or LocalStorage!");
+      headers.set("authorization", `Bearer ${token}`);
     }
-
     return headers;
   },
-  credentials: "include", // ✅ Send cookies for refresh token authentication
 });
 
-// ✅ Define the return type for baseQueryWithReAuth
-type BaseQueryReturnType = QueryReturnValue<
-  unknown,
-  FetchBaseQueryError,
-  Record<string, unknown>
->;
-
 // ✅ Re-authentication logic to refresh expired token
-const baseQueryWithReAuth = async (
-  args: BaseQueryArgs,
-  api: BaseQueryApi,
-  extraOptions: BaseQueryOptions
-): Promise<BaseQueryReturnType> => {
+const baseQueryWithReAuth = async (args: any, api: any, extraOptions: any) => {
+  // check result of each query. if it's a 401, we'll try to re-authenticate
   let result = await baseQuery(args, api, extraOptions);
-
   if (result.error?.status === 401) {
-    try {
-      const refreshResponse = await fetch(`/api/refresh`, {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST + "refresh",
+      {
         method: "POST",
         credentials: "include",
-      });
-
-      if (refreshResponse.ok) {
-        const refreshData = await refreshResponse.json();
-
-        // ✅ Store new access token in Redux & LocalStorage
-        api.dispatch(setAccessToken(refreshData.access_token));
-        localStorage.setItem("access_token", refreshData.access_token);
-
-        // ✅ Retry the failed request with the new token
-        const newHeaders = new Headers(args.headers);
-        newHeaders.set("Authorization", `Bearer ${refreshData.access_token}`);
-
-        const updatedArgs = { ...args, headers: newHeaders };
-        result = await baseQuery(updatedArgs, api, extraOptions);
-      } else {
-        // ✅ Attempt logout if refresh fails
-        await fetch(`/api/logout`, {
+      }
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      api.dispatch(setAccessToken(data.accessToken));
+      // re-run the query with the new token
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST + "logout",
+        {
           method: "POST",
           credentials: "include",
-        });
-
-        // ✅ Clear access token in Redux & LocalStorage
-        api.dispatch(setAccessToken(null));
-        localStorage.removeItem("access_token");
-      }
-    } catch (error) {
-      console.error("🚨 Token Refresh Error:", error);
-      api.dispatch(setAccessToken(null));
-      localStorage.removeItem("access_token");
+        }
+      );
+      const data = await res.json();
     }
   }
-
   return result;
 };
 

@@ -7,32 +7,28 @@ export async function POST() {
   const cookieName = process.env.COOKIE_REFRESH_TOKEN_NAME || "refresh";
   const credential = cookieStore.get(cookieName); // ✅ Now this works
 
-  console.log("Credential from cookie:", credential);
-
   if (!credential) {
     console.error("No refresh token found in cookies.");
-    return NextResponse.json(
-      { message: "Token not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ message: "Token not found" }, { status: 404 });
   }
 
   const refreshToken = credential.value;
-  console.log("Extracted Refresh Token:", refreshToken);
 
   try {
     // Make API call to refresh the token
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_O2_API_URL}api/refresh`,
+      `${process.env.NEXT_PUBLIC_O2_API_URL}/api/refresh`,
       {
         method: "POST",
-        credentials: "include", // ✅ Required for cookies to be sent
-        headers: { "Accept": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${refreshToken}`,
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
       }
     );
 
     const rawResponse = await response.text();
-    console.log("Raw API Response:", rawResponse);
 
     if (!response.ok) {
       console.error("Failed to refresh token. Status:", response.status);
@@ -43,7 +39,9 @@ export async function POST() {
     }
 
     const data = JSON.parse(rawResponse);
-    const { access_token, refresh_token } = data?.payload || {};
+
+    const access_token = data?.data?.access_token;
+    const refresh_token = data?.data.refresh_token;
 
     if (!access_token || !refresh_token) {
       console.error("Missing tokens in API response.");
@@ -60,8 +58,8 @@ export async function POST() {
       path: "/",
       sameSite: "lax",
     });
-
     console.log("Successfully refreshed tokens.");
+
     return NextResponse.json(
       { accessToken: access_token },
       {

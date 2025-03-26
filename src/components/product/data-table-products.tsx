@@ -32,7 +32,15 @@ import {
 import { useState } from "react";
 import { ColumnProducts } from "./ColumnProducts";
 import { useGetAllProductQuery } from "@/redux/service/product";
-
+import { Button } from "../ui/button";
+import * as XLSX from "xlsx";
+import { AlertDialog } from "@radix-ui/react-alert-dialog";
+import {
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import CreateProduct from "./CreateProduct";
 export function DataTableProductComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -74,8 +82,45 @@ export function DataTableProductComponent() {
     },
   });
 
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(productData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
+    XLSX.writeFile(wb, "user_profiles.xlsx");
+  };
   return (
     <section className="w-full flex flex-col">
+      <div className="flex justify-between items-start sm:items-center gap-4 pr-5 my-5">
+        <div>
+          <h1 className="text-title-color text-lg md:text-2xl xl:text-4xl font-bold dark:text-secondary-color-text mb-1 md:mb-2">
+            PRODUCT MANAGEMENT
+          </h1>
+        </div>
+        <div>
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <div className="mx-5 py-2 rounded-[6px] bg-primary text-white px-4 w-auto">
+                Create Product
+              </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent className=" h-[90%] overflow-y-auto !bg-white  scrollbar-hide">
+              <AlertDialogTitle>
+                <p className="text-[30px]  mb-5 text-accent font-medium">
+                  Create Product
+                </p>
+                <hr />
+              </AlertDialogTitle>
+              <CreateProduct />
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button
+            onClick={exportToExcel}
+            className=" rounded-[6px] bg-accent hover:bg-accent text-white px-4 w-auto"
+          >
+            Export Excel
+          </Button>
+        </div>
+      </div>
       <section className="w-full bg-white  rounded-[6px] dark:backdrop-blur dark:bg-opacity-5 space-y-4">
         <section className="w-full flex flex-col items-center gap-2 lg:flex-row">
           <Input
