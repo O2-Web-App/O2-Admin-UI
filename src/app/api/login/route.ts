@@ -1,32 +1,19 @@
 import { serialize } from "cookie";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import fetch from "node-fetch"; // use node-fetch instead
-import https from "https"; // native
-
-interface LoginResponse {
-  data: { user: any; access_token: string; refresh_token: string };
-}
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { email, password } = body;
 
-  const agent = new https.Agent({
-    rejectUnauthorized: false, // <--- magic here
-  });
   // Make a POST request to the Our API
 
-  if (process.env.NODE_ENV !== "production") {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-  }
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_O2_API_URL}/api/login`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      agent,
     }
   );
 
@@ -38,12 +25,11 @@ export async function POST(req: NextRequest) {
   }
   // If the request is successful, parse the response body to get the data
 
-  const data = (await response.json()) as LoginResponse;
+  const data = await response.json();
 
   const user = data.data?.user || null;
   const accessToken = data.data?.access_token || null;
   const refreshToken = data.data?.refresh_token;
-
 
   // Serialize the refresh token and set it as a cookie with
   // (httpOnly, secure, path, and sameSite options) in the response headers to the client-side
