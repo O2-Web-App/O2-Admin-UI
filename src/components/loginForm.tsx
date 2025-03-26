@@ -84,8 +84,7 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
-  const tokenData = useAppSelector((state) => state.token.token);
-  console.log(tokenData);
+
   return (
     <div className={styles.loginContainer}>
       <div
