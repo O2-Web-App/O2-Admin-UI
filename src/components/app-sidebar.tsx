@@ -98,20 +98,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_O2_API_URL}api/logout`,
+        `${process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST}logout`,
         {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+          body: JSON.stringify({}),
         }
       );
 
       if (response.ok) {
         dispatch(setAccessToken(null));
-        localStorage.removeItem("access_token");
+        localStorage.clear();
 
         // Redirect to login
         router.push("/login");
@@ -134,7 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <div
           onClick={() => handleLogout()}
-          className="w-full bg-accent py-2 cursor-pointer text-center rounded-md text-white"
+          className="w-full bg-red-500 py-2 cursor-pointer text-center rounded-md text-white"
         >
           Log out
         </div>

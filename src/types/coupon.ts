@@ -1,7 +1,10 @@
 export type CouponType = {
-  uuid: string;
+  uuid?: string;
   code: string;
-  discount_percentage: string;
+  max_usage: number;
+  user_limit: number;
+  discount_percentage: number;
   start_date: string;
   end_date: string;
+  is_active?: number;
 };

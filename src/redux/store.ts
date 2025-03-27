@@ -5,6 +5,7 @@ import tokenSlice from "./features/auth/tokenSlice";
 import userSlice from "./features/user";
 import awardRankSlice from "./features/awardRank";
 import awardTypeSlice from "./features/awardType";
+import awardUuidSlice from "./features/awardUuid";
 // create store
 export const makeStore = () => {
   return configureStore({
@@ -15,6 +16,7 @@ export const makeStore = () => {
       token: tokenSlice,
       awardRank: awardRankSlice,
       awardType: awardTypeSlice,
+      awardUuid: awardUuidSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(o2API.middleware),

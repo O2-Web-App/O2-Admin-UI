@@ -40,6 +40,15 @@ export const blogAPI = o2API.injectEndpoints({
       }),
       invalidatesTags: ["Blog"],
     }),
+
+    // public blog
+    publicBlog: builder.mutation<any, { uuid: string }>({
+      query: ({ uuid }) => ({
+        url: `/api/blogs/${uuid}/publish`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Blog"],
+    }),
   }),
 });
 
@@ -48,4 +57,5 @@ export const {
   useGetTop10BlogQuery,
   useDisableBlogMutation,
   useConfirmBlogAwardMutation,
+  usePublicBlogMutation,
 } = blogAPI;

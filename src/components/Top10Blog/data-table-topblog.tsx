@@ -10,7 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useGetTop10BlogQuery } from "@/redux/service/blog";
+import {
+  useConfirmBlogAwardMutation,
+  useGetTop10BlogQuery,
+} from "@/redux/service/blog";
 
 import {
   ColumnFiltersState,
@@ -27,6 +30,8 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 import { columnsTopBlog } from "@/components/Top10Blog/ColumnTopBlog";
 import { TopBlogType } from "@/types/topBlog";
+import { useAppSelector } from "@/redux/hooks";
+import { toast } from "sonner";
 export function DataTableTopBlogComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -40,8 +45,6 @@ export function DataTableTopBlogComponent() {
 
   // Use static data instead of API call
   const topBlogData: TopBlogType[] = topBlog?.data;
-
-  console.log(topBlogData);
 
   const table = useReactTable({
     data: topBlogData,
@@ -69,15 +72,60 @@ export function DataTableTopBlogComponent() {
     XLSX.writeFile(wb, "discountData.xlsx");
   };
 
+  const awardType = useAppSelector((state) => state.awardType.value);
+  const awardRank = useAppSelector((state) => state.awardRank.value);
+  const awardUuid = useAppSelector((state) => state.awardUuid.value);
+
+  const [confirmAward] = useConfirmBlogAwardMutation();
+
+  const handleConfirmAward = async () => {
+    try {
+      const response = await confirmAward({
+        uuid: awardUuid,
+        award_rank: awardRank,
+        award_type: awardType,
+      });
+      if (response.data) {
+        toast.success("Confrim Award Successfully", {
+          style: {
+            background: "#22bb33",
+            color: "#fff",
+          },
+        });
+      } else {
+        toast.error("Failed To Confrim Award ", {
+          style: {
+            background: "#bb2124",
+            color: "#fff",
+          },
+        });
+      }
+    } catch (error) {
+      toast.success("Something Went Wrong", {
+        style: {
+          background: "#bb2124",
+          color: "#fff",
+        },
+      });
+    }
+  };
+
   return (
     <section className="w-full flex flex-col">
       <div className="w-full flex justify-between ">
         <h1 className="text-title-color ml-10 text-lg md:text-2xl xl:text-4xl font-bold dark:text-secondary-color-text mb-1 md:mb-2">
-         TOP 10 BLOG MANAGEMENT
+          TOP 10 BLOG MANAGEMENT
         </h1>
 
         <div className="space-x-5 mr-10">
           {/* export pdf */}
+
+          <Button
+            onClick={() => handleConfirmAward()}
+            className=" rounded-[6px] bg-secondary hover:bg-secondary text-white px-4 w-auto"
+          >
+            Submit Award
+          </Button>
           <Button
             onClick={exportToExcel}
             className=" rounded-[6px] bg-accent hover:bg-accent text-white px-4 w-auto"
