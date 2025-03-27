@@ -11,5 +11,4 @@ export type ProductType = {
   preorder_duration: number | null;
   expiration_date: string; // ISO date string, e.g., "2025-06-01"
   multi_images: string[]; // Array of image URLs (as strings)
-  files: null;
 };

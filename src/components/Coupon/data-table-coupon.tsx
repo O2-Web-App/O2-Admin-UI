@@ -71,7 +71,7 @@ export function DataTableCouponComponent() {
 
   // get all discount
   const { data: coupon, isLoading } = useGetAllCouponQuery({
-    pages: currentPage,
+    page: currentPage,
     per_page: itemsPerPage,
   });
 

@@ -45,14 +45,47 @@ export const couponAPI = o2API.injectEndpoints({
       providesTags: ["Coupon"],
     }),
 
-    // update Coupon name
-    updateCouponName: builder.mutation<any, { uuid: string; name: string }>({
-      query: ({ uuid, name }) => ({
+    // update Coupon
+    updateCoupon: builder.mutation<
+      any,
+      {
+        uuid: string;
+        code: string;
+        discount_percentage: number;
+        max_usage: number;
+        user_limit: number;
+        start_date: string;
+        end_date: string;
+      }
+    >({
+      query: ({
+        uuid,
+        code,
+        discount_percentage,
+        end_date,
+        max_usage,
+        start_date,
+        user_limit,
+      }) => ({
         url: `/api/coupons/${uuid}`,
         method: "PUT",
         body: {
-          name,
+          code,
+          discount_percentage,
+          end_date,
+          max_usage,
+          start_date,
+          user_limit,
         },
+      }),
+      invalidatesTags: ["Coupon"],
+    }),
+
+    // update status Coupon
+    updateCouponStatus: builder.mutation<any, { uuid: string }>({
+      query: ({ uuid }) => ({
+        url: `/api/coupons/${uuid}/toggle-status`,
+        method: "PATCH",
       }),
       invalidatesTags: ["Coupon"],
     }),
@@ -72,5 +105,6 @@ export const {
   useCreateCouponMutation,
   useGetAllCouponQuery,
   useDeleteCouponMutation,
-  useUpdateCouponNameMutation,
+  useUpdateCouponMutation,
+  useUpdateCouponStatusMutation,
 } = couponAPI;

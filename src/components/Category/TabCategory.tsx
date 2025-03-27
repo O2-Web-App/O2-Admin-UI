@@ -238,102 +238,106 @@ export default function TabCategory() {
           onValueChange={setActiveTab}
           className="ml-8 my-5"
         >
-          <TabsList>
-            {result?.map((item: CategoryType, index: number) => (
-              <TabsTrigger key={index} value={item?.name}>
-                {item?.name}
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div
-                      className="pl-5"
-                      onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                    >
-                      <div className="bg-accent text-white text-sm px-3 py-1 rounded-md  transition ">
-                        Action
+          <div className="max-w-[1200px] overflow-x-auto scrollbar-hide">
+            <TabsList>
+              {result?.map((item: CategoryType, index: number) => (
+                <TabsTrigger key={index} value={item?.name}>
+                  {item?.name}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div
+                        className="pl-5"
+                        onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                      >
+                        <div className="bg-accent text-white text-sm px-3 py-1 rounded-md  transition ">
+                          Action
+                        </div>
                       </div>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="flex flex-col space-y-4 w-[100px] p-3">
-                    {/* update category by name */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button className="text-white bg-primary rounded-[6px] py-1 px-4 w-auto">
-                          Update
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Update Product Category Name
-                          </AlertDialogTitle>
-                        </AlertDialogHeader>
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col space-y-4 w-[100px] p-3">
+                      {/* update category by name */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="text-white bg-primary rounded-[6px] py-1 px-4 w-auto">
+                            Update
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Update Product Category Name
+                            </AlertDialogTitle>
+                          </AlertDialogHeader>
 
-                        {/* 🧾 Input form */}
-                        <div className="flex flex-col space-y-2">
-                          <label
-                            htmlFor="category"
-                            className="text-sm font-medium"
-                          >
-                            Category Name
-                          </label>
-                          <Input
-                            id="category"
-                            placeholder="Enter category name to update"
-                            value={categoryName}
-                            onChange={(e) => setCategoryName(e.target.value)}
-                            className="h-[45px]"
-                          />
-                        </div>
+                          {/* 🧾 Input form */}
+                          <div className="flex flex-col space-y-2">
+                            <label
+                              htmlFor="category"
+                              className="text-sm font-medium"
+                            >
+                              Category Name
+                            </label>
+                            <Input
+                              id="category"
+                              placeholder="Enter category name to update"
+                              value={categoryName}
+                              onChange={(e) => setCategoryName(e.target.value)}
+                              className="h-[45px]"
+                            />
+                          </div>
 
-                        <AlertDialogFooter>
-                          <AlertDialogCancel
-                            onClick={() => setCategoryName("")}
-                          >
-                            Cancel
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            className="text-white bg-primary"
-                            onClick={() => handleUpdateCategoryName(item.uuid)}
-                          >
-                            confirm
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel
+                              onClick={() => setCategoryName("")}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className="text-white bg-primary"
+                              onClick={() =>
+                                handleUpdateCategoryName(item.uuid)
+                              }
+                            >
+                              confirm
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
 
-                    {/* delete product */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <div className="bg-red-500 text-white px-3 py-2 rounded transition hover:bg-red-500">
-                          Delete
-                        </div>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you sure want to delete {item.name} category?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete the category.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>No</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteCategory(item?.uuid)}
-                            className="text-white"
-                          >
-                            Yes
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </PopoverContent>
-                </Popover>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+                      {/* delete product */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <div className="bg-red-500 text-white px-3 py-2 rounded transition hover:bg-red-500">
+                            Delete
+                          </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure want to delete {item.name} category?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete the category.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>No</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteCategory(item?.uuid)}
+                              className="text-white"
+                            >
+                              Yes
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </PopoverContent>
+                  </Popover>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {result?.map((item: CategoryType, index: number) => (
             <TabsContent key={index} value={item?.name}>

@@ -23,9 +23,22 @@ export async function POST(req: NextRequest) {
       message: "Failed to login",
     });
   }
-  // If the request is successful, parse the response body to get the data
 
+  // If the request is successful, parse the response body to get the data
   const data = await response.json();
+
+  // Extract roles and ensure the user has the "ADMIN" role
+  const roles = data?.data?.user.role || "";
+  if (roles !== "admin") {
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Admin access only.",
+      },
+      {
+        status: 403,
+      }
+    );
+  }
 
   const user = data.data?.user || null;
   const accessToken = data.data?.access_token || null;

@@ -9,24 +9,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getYouTubeThumbnail } from "@/lib/utils";
-import { useConfirmBlogAwardMutation } from "@/redux/service/blog";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { BlogType } from "@/types/blog";
 import { TopBlogType } from "@/types/topBlog";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { IoIosCloseCircle, IoMdMore } from "react-icons/io";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { stat } from "fs";
 import { setAwardType } from "@/redux/features/awardType";
 import { setAwardRank } from "@/redux/features/awardRank";
+import { setAwardUuid } from "@/redux/features/awardUuid";
+import AwardTypeDropdown from "./AwardTypeDropdown";
+import AwardRankDropdown from "./AwardRankDropdown";
 export const columnsTopBlog: ColumnDef<TopBlogType>[] = [
   {
     accessorKey: "title",
@@ -126,9 +126,13 @@ export const columnsTopBlog: ColumnDef<TopBlogType>[] = [
             {/* blog detail */}
             <div>
               {/* title */}
-              <p className="text-title  font-medium">{blogDetail?.title}</p>
+              <div className="w-full flex justify-between">
+                {/* title blog */}
+                <p className="text-title  font-medium">{blogDetail?.title}</p>
+              </div>
               {blogDetail?.published_at && (
                 <p className="text-font_description my-3 text-description">
+                  Public At :{" "}
                   {blogDetail?.published_at?.match(/^\d{4}-\d{2}-\d{2}/)?.[0]}
                 </p>
               )}
@@ -175,128 +179,20 @@ export const columnsTopBlog: ColumnDef<TopBlogType>[] = [
       );
     },
   },
+  // award type
   {
     accessorKey: "award_type",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Award Type" />
     ),
-    cell: ({ row }) => {
-      const dispatch = useAppDispatch();
-      const awardType = useAppSelector((state) => state.awardType.value);
-
-      return (
-        <DropdownMenu>
-          {row.original.is_awarded === true ? (
-            <div className="bg-secondary w-[100px] text-center rounded-md py-2 text-white">
-              {row.original.award_type}
-            </div>
-          ) : (
-            <DropdownMenuTrigger className="bg-accent w-[80px] rounded-md h-[40px] text-white">
-              {row.original.award_type === ""
-                ? "Rank"
-                : row.original.award_type}
-            </DropdownMenuTrigger>
-          )}
-          <DropdownMenuContent>
-            <div className="flex"></div>
-            <DropdownMenuLabel className="text-accent">
-              Select Award Type
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                dispatch(setAwardType("best_content"));
-              }}
-              className={` cursor-pointer ${
-                awardType === "best_content"
-                  ? "bg-accent text-white"
-                  : "bg-white"
-              }`}
-            >
-              best_content
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={` cursor-pointer ${
-                awardType === "most_viewed"
-                  ? "bg-accent text-white"
-                  : "bg-white"
-              }`}
-              onClick={() => dispatch(setAwardType("most_viewed"))}
-            >
-              most_viewed
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={` cursor-pointer ${
-                awardType === "most_liked" ? "bg-accent text-white" : "bg-white"
-              }`}
-              onClick={() => dispatch(setAwardType("most_liked"))}
-            >
-              most_liked
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <AwardTypeDropdown row={row} />,
   },
+  // award rank
   {
     accessorKey: "award_rank",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Award Rank" />
     ),
-    cell: ({ row }) => {
-      const dispatch = useAppDispatch();
-      return (
-        <DropdownMenu>
-          {row.original.is_awarded === true ? (
-            <div className="bg-secondary w-[70px] text-center rounded-md py-2 text-white">
-              {row.original.award_rank}
-            </div>
-          ) : (
-            <DropdownMenuTrigger className="bg-accent w-[80px] rounded-md h-[40px] text-white">
-              {row.original.award_rank === ""
-                ? "Rank"
-                : row.original.award_rank}
-            </DropdownMenuTrigger>
-          )}
-
-          <DropdownMenuContent>
-            <DropdownMenuLabel className="text-accent">
-              Award Rank
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className={`cursor-pointer ${
-                row.original.award_rank === "1"
-                  ? "bg-accent text-white"
-                  : "bg-white"
-              }`}
-              onClick={() => dispatch(setAwardRank("1"))}
-            >
-              1
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`cursor-pointer ${
-                row.original.award_rank === "2"
-                  ? "bg-accent text-white"
-                  : "bg-white"
-              }`}
-              onClick={() => dispatch(setAwardRank("2"))}
-            >
-              2
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`cursor-pointer ${
-                row.original.award_rank === "3"
-                  ? "bg-accent text-white"
-                  : "bg-white"
-              }`}
-              onClick={() => dispatch(setAwardRank("3"))}
-            >
-              3
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <AwardRankDropdown row={row} />,
   },
 ];

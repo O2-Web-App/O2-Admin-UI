@@ -6,6 +6,7 @@ import { getYouTubeThumbnail } from "@/lib/utils";
 import {
   useConfirmBlogAwardMutation,
   useDisableBlogMutation,
+  usePublicBlogMutation,
 } from "@/redux/service/blog";
 import { BlogType } from "@/types/blog";
 import { useState } from "react";
@@ -133,6 +134,38 @@ export const columnsBlog: ColumnDef<BlogType>[] = [
         setBlogDetail(data?.data);
       };
 
+      const [publicBlog] = usePublicBlogMutation();
+
+      const handlePublicBlog = async (uuid: string) => {
+        try {
+          const response = await publicBlog({
+            uuid: uuid,
+          });
+          if (response.data) {
+            toast.success("Blog Public successfully", {
+              style: {
+                background: "#22bb33",
+                color: "#fff",
+              },
+            });
+          } else {
+            toast.error("Failed to Public Blog", {
+              style: {
+                background: "#bb2124",
+                color: "#fff",
+              },
+            });
+          }
+        } catch (error) {
+          toast.error("Something Went Wrong", {
+            style: {
+              background: "#bb2124",
+              color: "#fff",
+            },
+          });
+        }
+      };
+
       return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
           <AlertDialogTrigger>
@@ -184,7 +217,12 @@ export const columnsBlog: ColumnDef<BlogType>[] = [
                 {/* title blog */}
                 <p className="text-title  font-medium">{blogDetail?.title}</p>
                 {/* public button */}
-                <button className="bg-primary px-3 h-[40px] text-white rounded-md ">
+                <button
+                  onClick={() => {
+                    handlePublicBlog(row.original.uuid), setIsOpen(false);
+                  }}
+                  className="bg-primary px-3 h-[40px] text-white rounded-md "
+                >
                   Public
                 </button>
               </div>
