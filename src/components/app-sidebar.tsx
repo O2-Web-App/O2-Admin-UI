@@ -11,6 +11,7 @@ import {
   ShoppingBasket,
   User,
   Rss,
+  TrendingUpDown,
 } from "lucide-react";
 
 import * as React from "react";
@@ -87,6 +88,11 @@ const data = {
       name: "Blog",
       url: "/blog",
       icon: Rss,
+    },
+    {
+      name: "Order",
+      url: "/order",
+      icon: TrendingUpDown,
     },
   ],
 };
