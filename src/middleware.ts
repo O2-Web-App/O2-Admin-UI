@@ -13,8 +13,8 @@ export default function middleware(request: NextRequest) {
     pathname.startsWith("/coupon") ||
     pathname.startsWith("/product ") ||
     pathname.startsWith("/category") ||
-    pathname.startsWith("/blog");
-
+    pathname.startsWith("/blog") ||
+    pathname.startsWith("/order");
   const isLoginPage = pathname.startsWith("/login");
 
   if (isAdminRoute && !accessToken && !isLoginPage) {

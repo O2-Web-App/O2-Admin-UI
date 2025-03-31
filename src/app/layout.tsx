@@ -1,7 +1,6 @@
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import StoreProvider from "./StoreProvider";
 import { Toaster } from "@/components/ui/sonner";
+import "./globals.css";
+import StoreProvider from "./StoreProvider";
 
 export default function RootLayout({
   children,

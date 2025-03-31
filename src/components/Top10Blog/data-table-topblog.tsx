@@ -28,7 +28,7 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import * as XLSX from "xlsx";
-import { columnsTopBlog } from "@/components/Top10Blog/ColumnTopBlog";
+import { ColumnsTopBlog } from "@/components/Top10Blog/ColumnTopBlog";
 import { TopBlogType } from "@/types/topBlog";
 import { useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ export function DataTableTopBlogComponent() {
 
   const table = useReactTable({
     data: topBlogData,
-    columns: columnsTopBlog,
+    columns: ColumnsTopBlog,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -100,7 +100,8 @@ export function DataTableTopBlogComponent() {
           },
         });
       }
-    } catch (error) {
+    } catch (e) {
+      console.log(e)
       toast.success("Something Went Wrong", {
         style: {
           background: "#bb2124",
@@ -192,7 +193,7 @@ export function DataTableTopBlogComponent() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columnsTopBlog.length}
+                      colSpan={ColumnsTopBlog.length}
                       className="h-20 text-center text-lg md:text-2xl xl:text-4xl"
                     >
                       <div className="flex w-full justify-center items-center">

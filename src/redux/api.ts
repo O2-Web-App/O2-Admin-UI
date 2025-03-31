@@ -1,12 +1,6 @@
-import {
-  createApi,
-  fetchBaseQuery,
-  FetchBaseQueryError,
-  QueryReturnValue,
-  BaseQueryApi,
-} from "@reduxjs/toolkit/query/react";
-import { RootState } from "./store";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setAccessToken } from "./features/auth/authSlice";
+import { RootState } from "./store";
 
 // ✅ Fetch Base Query with Authorization Header
 const baseQuery = fetchBaseQuery({
@@ -63,6 +57,7 @@ export const o2API = createApi({
     "Coupon",
     "userProfile",
     "Blog",
+    "Orders",
   ],
   reducerPath: "o2API",
   baseQuery: baseQueryWithReAuth, // ✅ Use the custom base query with re-authentication

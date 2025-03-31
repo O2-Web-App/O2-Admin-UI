@@ -44,22 +44,16 @@ export const userAPI = o2API.injectEndpoints({
       {
         avatar: string;
         name: string;
-        address: string;
-        phone_number: string;
         bio: string;
-        date_of_birth: string;
       }
     >({
-      query: ({ name, address, bio, date_of_birth, phone_number, avatar }) => ({
+      query: ({ name, bio, avatar }) => ({
         url: `/api/users/current-user`,
         method: "PATCH",
         body: {
           avatar,
           name,
-          address,
           bio,
-          date_of_birth,
-          phone_number,
         },
       }),
       invalidatesTags: ["Users"],

@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { useGetAllProductQuery } from "@/redux/service/product";
 import { ProductType } from "@/types/products";
 import {
   ColumnFiltersState,
@@ -30,16 +31,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { ColumnProducts } from "./ColumnProducts";
-import { useGetAllProductQuery } from "@/redux/service/product";
-import { Button } from "../ui/button";
 import * as XLSX from "xlsx";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
-import {
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import { ColumnProducts } from "./ColumnProducts";
 import CreateProduct from "./CreateProduct";
 export function DataTableProductComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -51,7 +45,7 @@ export function DataTableProductComponent() {
   const [selectedStatus, setSelectedStatus] = useState("all");
 
   // get all product data from api
-  const { data: products } = useGetAllProductQuery({
+  const { data: products, isLoading } = useGetAllProductQuery({
     pages: currentPage,
     per_page: itemsPerPage,
   });
@@ -59,9 +53,7 @@ export function DataTableProductComponent() {
   const pagination = products?.data?.metadata;
 
   // Use static data instead of API call
-  const productData: ProductType[] = products?.data?.data || [];
-
-  const isLoading = false;
+  const productData: ProductType[] = products?.data || [];
 
   const table = useReactTable({
     data: productData,
@@ -97,22 +89,7 @@ export function DataTableProductComponent() {
           </h1>
         </div>
         <div>
-          <AlertDialog>
-            <AlertDialogTrigger>
-              <div className="mx-5 py-2 rounded-[6px] bg-primary text-white px-4 w-auto">
-                Create Product
-              </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent className=" h-[90%] overflow-y-auto !bg-white  scrollbar-hide">
-              <AlertDialogTitle>
-                <p className="text-[30px]  mb-5 text-accent font-medium">
-                  Create Product
-                </p>
-                <hr />
-              </AlertDialogTitle>
-              <CreateProduct />
-            </AlertDialogContent>
-          </AlertDialog>
+          <CreateProduct />
           <Button
             onClick={exportToExcel}
             className=" rounded-[6px] bg-accent hover:bg-accent text-white px-4 w-auto"

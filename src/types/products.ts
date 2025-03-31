@@ -1,14 +1,17 @@
 export type ProductType = {
+  uuid?: string;
   name: string;
   description: string;
   category_uuid: string;
   subcategory_uuid: string;
   discount_uuid: string;
-
+  discount_percentage?: number;
+  discounted_price?: number;
   price: number;
   stock: number;
   is_preorder: boolean;
   preorder_duration: number | null;
+  single_image?: string;
   expiration_date: string; // ISO date string, e.g., "2025-06-01"
-  multi_images: string[]; // Array of image URLs (as strings)
+  multi_images: File[]; // Array of image URLs (as strings)
 };
