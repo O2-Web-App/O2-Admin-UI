@@ -98,14 +98,20 @@ export const columnsUser: ColumnDef<UserType>[] = [
       );
     },
   },
+  // {
+  //   accessorKey: "action",
+  //   header: () => <div></div>,
+  //   cell: ({ row }) => (
+  //     <ActionUserComponent
+  //       uuid={row.original.uuid}
+  //       status={row.original.is_blocked}
+  //     />
+  //   ),
+  // },
   {
     accessorKey: "action",
     header: () => <div></div>,
-    cell: ({ row }) => (
-      <ActionUserComponent
-        uuid={row.original.uuid}
-        status={row.original.is_blocked}
-      />
-    ),
-  },
+    cell: ({ row }) => <ActionUserComponent uuid={row.original.uuid} />,
+},
+
 ];
