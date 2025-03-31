@@ -10,7 +10,7 @@ import {
   Shapes,
   ShoppingBasket,
   User,
-  Rss,
+  MessageSquareMore,
   TrendingUpDown,
 } from "lucide-react";
 
@@ -87,7 +87,7 @@ const data = {
     {
       name: "Blog",
       url: "/blog",
-      icon: Rss,
+      icon: MessageSquareMore,
     },
     {
       name: "Order",

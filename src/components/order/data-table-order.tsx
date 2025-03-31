@@ -68,6 +68,8 @@ export function DataTableOrderComponent() {
 
   const orderData: OrderType[] = data?.data?.data;
 
+  const dateString = new Date().toISOString();
+
   type FormValues = {
     start_date: string;
     end_date: string;
@@ -75,8 +77,10 @@ export function DataTableOrderComponent() {
 
   const initialValues = {
     start_date: "2025-03-01",
-    end_date: "2025-03-28",
+    end_date: dateString.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "",
   };
+
+  // Get current date as a string
 
   const validationSchema = Yup.object().shape({
     start_date: Yup.string().required("Start date is required"),
