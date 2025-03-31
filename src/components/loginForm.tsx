@@ -1,7 +1,6 @@
 "use client";
 import styles from "@/app/(auth)/login/login.module.css";
 import { setAccessToken } from "@/redux/features/auth/authSlice";
-import { setUser } from "@/redux/features/user";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
@@ -48,8 +47,6 @@ export default function LoginForm() {
       );
 
       const result = await response.json();
-
-      dispatch(setUser(result?.data?.user));
 
       if (response.ok) {
         const access_token = result?.accessToken;

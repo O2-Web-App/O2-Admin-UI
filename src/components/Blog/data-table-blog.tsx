@@ -27,7 +27,7 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import * as XLSX from "xlsx";
-import { columnsBlog } from "./ColumnBlog";
+import { ColumnsBlog } from "./ColumnBlog";
 import { Pagination } from "../Pagination";
 export function DataTableBlogComponent() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -50,7 +50,7 @@ export function DataTableBlogComponent() {
 
   const table = useReactTable({
     data: blogData,
-    columns: columnsBlog,
+    columns: ColumnsBlog,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -149,7 +149,7 @@ export function DataTableBlogComponent() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columnsBlog.length}
+                      colSpan={ColumnsBlog.length}
                       className="h-20 text-center text-lg md:text-2xl xl:text-4xl"
                     >
                       <div className="flex w-full justify-center items-center">

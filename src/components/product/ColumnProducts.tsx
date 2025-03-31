@@ -1,8 +1,9 @@
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { ActionUserComponent } from "@/components/user/UserActionComponent";
+
+
 import { ProductType } from "@/types/products";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
+import DeleteProduct from "./DeleteProduct";
 const imageBaseUrl = process.env.NEXT_PUBLIC_O2_API_URL || "/place-holder.jpg";
 export const ColumnProducts: ColumnDef<ProductType>[] = [
   {
@@ -20,7 +21,7 @@ export const ColumnProducts: ColumnDef<ProductType>[] = [
           src={
             row.original?.single_image
               ? imageBaseUrl + row.original.single_image
-              : "/place-holder.jpg"
+              : "/place-holder-product.jpg"
           }
           alt="image"
         />
@@ -74,6 +75,8 @@ export const ColumnProducts: ColumnDef<ProductType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ACTION" />
     ),
-    cell: ({ row }) => <ActionUserComponent uuid={row.original.uuid} />,
+    cell: ({ row }) => (
+      <DeleteProduct row={row} />
+    )
   },
 ];

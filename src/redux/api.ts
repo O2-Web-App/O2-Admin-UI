@@ -1,12 +1,9 @@
 import {
   createApi,
-  fetchBaseQuery,
-  FetchBaseQueryError,
-  QueryReturnValue,
-  BaseQueryApi,
+  fetchBaseQuery
 } from "@reduxjs/toolkit/query/react";
-import { RootState } from "./store";
 import { setAccessToken } from "./features/auth/authSlice";
+import { RootState } from "./store";
 
 // ✅ Fetch Base Query with Authorization Header
 const baseQuery = fetchBaseQuery({

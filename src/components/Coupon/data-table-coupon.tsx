@@ -13,15 +13,13 @@ import { columnsUser } from "@/components/user/ColumnUsers";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { cn, formatDateToUtcMidnight } from "@/lib/utils";
+import { formatDateToUtcMidnight } from "@/lib/utils";
 import {
   useCreateCouponMutation,
   useGetAllCouponQuery,
@@ -38,29 +36,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { Pagination } from "../Pagination";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { columnsCoupon } from "./ColumnCoupon";
+import * as Yup from "yup";
+import { usePostImageMutation } from "@/redux/service/mediaUpload";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 export function DataTableCouponComponent() {
   // redux create Coupon
   const [createCoupon] = useCreateCouponMutation();
-
-  // state for Coupon input form
-  const [CouponName, setCouponName] = useState("");
-  const [couponPercentage, setCouponPercentage] = useState<number>(0);
-  const [maxUsage, setMaxUsage] = useState<number>(0);
-  const [userLimit, setUserLimit] = useState<number>(0);
-  // select data
-  const [startedDate, setStartedDate] = useState<Date>();
-
-  // end_date
-  const [endDate, setEndDate] = useState<Date>();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -106,26 +92,96 @@ export function DataTableCouponComponent() {
     XLSX.writeFile(wb, "coupon.xlsx");
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  // rtk upload file
+  const [uploadImage] = usePostImageMutation();
+
+  // formik for creat discount
+  const initValue: CouponType = {
+    code: "",
+    max_usage: 0,
+    discount_percentage: 0,
+    user_limit: 0,
+    start_date: "",
+    end_date: "",
+    image: "",
+  };
+
+  const FILE_SIZE = 1024 * 1024 * 2;
+  const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
+
+  const validationSchema = Yup.object().shape({
+    code: Yup.string().required("Name is required"),
+    discount_percentage: Yup.number()
+      .min(0, "Discount percentage must be positive")
+      .required("Discount percentage is required"),
+    max_usage: Yup.number()
+      .min(0, "max_usage must be positive")
+      .required("max_usage is required"),
+    user_limit: Yup.number()
+      .min(0, "user_limit must be positive")
+      .required("user_limit is required"),
+    start_date: Yup.string().required("Start Date is required"),
+    end_date: Yup.string().required("End Date is required"),
+    image: Yup.mixed()
+      .test("fileSize", "File too large (max 2MB)", (value: any) => {
+        if (!value || typeof value === "string") return true; // Allow empty values (Formik might set as an empty string)
+        return value.size <= FILE_SIZE;
+      })
+      .test(
+        "fileFormat",
+        "Unsupported Format (JPEG, PNG, GIF only)",
+        (value: any) => {
+          if (!value || typeof value === "string") return true;
+          return SUPPORTED_FORMATS.includes(value.type);
+        }
+      )
+      .required("Image is required"),
+  });
+
   // function create discount
-  const handleCreatDiscount = async () => {
+  const handleCreatCoupon = async (value: CouponType) => {
+    const image =
+      typeof value.image === "object" &&
+      value.image !== null &&
+      "name" in value.image
+        ? (value.image as File)
+        : null;
+
     try {
-      const response = await createCoupon({
-        code: CouponName,
-        max_usage: maxUsage,
-        user_limit: userLimit,
-        discount_percentage: couponPercentage,
-        start_date: formatDateToUtcMidnight(startedDate ?? new Date()) || "",
-        end_date: formatDateToUtcMidnight(endDate ?? new Date()) || "",
-      });
-      if (response.data) {
-        toast.success("Coupon Create Successfully", {
-          style: {
-            background: "#22bb33",
-            color: "#fff",
-          },
+      if (image) {
+        const response = await uploadImage({ image: image }).unwrap().then();
+        const imageUrl = response?.data?.file_path;
+
+        const res = await createCoupon({
+          code: value.code,
+          max_usage: value.max_usage,
+          discount_percentage: value.discount_percentage,
+          start_date: value.start_date,
+          end_date: value.end_date,
+          user_limit: value.user_limit,
+          image: imageUrl,
         });
+
+        if (res.data) {
+          setIsOpen(false);
+          toast.success("Discount Created Successfully", {
+            style: {
+              background: "#10B981",
+              color: "#fff",
+            },
+          });
+        } else {
+          toast.error("Fail to create discount", {
+            style: {
+              background: "#bb2124",
+              color: "#fff",
+            },
+          });
+        }
       } else {
-        toast.error("Failed To Create Coupon ", {
+        toast.error("Fail to upload image", {
           style: {
             background: "#bb2124",
             color: "#fff",
@@ -151,135 +207,219 @@ export function DataTableCouponComponent() {
 
         <div className="space-x-5 mr-10">
           {/* create Category */}
-          <AlertDialog>
+          <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
               <Button className="rounded-[6px] bg-primary text-white px-4 w-auto">
                 Create Coupon
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="h-[90%] overflow-y-auto scrollbar-hide">
               <AlertDialogHeader>
                 <AlertDialogTitle>Create Coupon</AlertDialogTitle>
               </AlertDialogHeader>
 
               {/* 🧾 Input form */}
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="CouponCode" className="text-sm font-medium">
-                  Coupon Code
-                </label>
-                <Input
-                  id="CouponCode"
-                  placeholder="Enter Coupon Code"
-                  value={CouponName}
-                  onChange={(e) => setCouponName(e.target.value)}
-                  className="h-[45px]"
-                />
-              </div>
-              {/* discount description */}
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="CouponDisPer" className="text-sm font-medium">
-                  Coupon Discount Percentage
-                </label>
-                <Input
-                  id="CouponDisPer"
-                  placeholder="Enter Discount Coupon"
-                  value={couponPercentage}
-                  onChange={(e) => setCouponPercentage(Number(e.target.value))}
-                  className="h-[45px]"
-                />
-              </div>
-              {/* coupon maxUsage  */}
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="CouponMaxUsage" className="text-sm font-medium">
-                  Coupon MaxUsage
-                </label>
-                <Input
-                  id="CouponMaxUsage"
-                  placeholder="Enter Coupon Max Usage"
-                  value={maxUsage}
-                  onChange={(e) => setMaxUsage(Number(e.target.value))}
-                  className="h-[45px]"
-                />
-              </div>
-              {/* coupon user_limit  */}
-              <div className="flex flex-col space-y-2">
-                <label
-                  htmlFor="CouponUserLimit"
-                  className="text-sm font-medium"
-                >
-                  Coupon User Limit
-                </label>
-                <Input
-                  id="CouponUserLimit"
-                  placeholder="Enter Coupon User Limit"
-                  value={userLimit}
-                  onChange={(e) => setUserLimit(Number(e.target.value))}
-                  className="h-[45px]"
-                />
-              </div>
-              {/* started date*/}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal hover:bg-white",
-                      !startedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {startedDate ? (
-                      format(startedDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startedDate}
-                    onSelect={setStartedDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              {/* edned date*/}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal hover:bg-white",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {endDate ? (
-                      format(endDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleCreatDiscount()}
-                  className="text-white bg-primary"
-                >
-                  Create
-                </AlertDialogAction>
-              </AlertDialogFooter>
+              <Formik
+                initialValues={initValue}
+                validationSchema={validationSchema}
+                onSubmit={handleCreatCoupon}
+              >
+                {({ setFieldValue, errors, touched }) => (
+                  <Form className="space-y-5 ">
+                    {/* code */}
+                    <div>
+                      <label
+                        htmlFor="code"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        Code
+                      </label>
+                      <Field
+                        id="code"
+                        name="code"
+                        placeholder="Coupon Code"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.code && touched.code
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="code"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* max_usage */}
+                    <div>
+                      <label
+                        htmlFor="max_usage"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        Max Usage
+                      </label>
+                      <Field
+                        type="number"
+                        id="max_usage"
+                        name="max_usage"
+                        placeholder="max_usage"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.max_usage && touched.max_usage
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="max_usage"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* Discount Percentage */}
+                    <div>
+                      <label
+                        htmlFor="discount_percentage"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        Discount Percentage
+                      </label>
+                      <Field
+                        type="number"
+                        id="discount_percentage"
+                        name="discount_percentage"
+                        placeholder="Discount percentage"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.discount_percentage &&
+                          touched.discount_percentage
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="discount_percentage"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+                    {/* user_limit */}
+                    <div>
+                      <label
+                        htmlFor="user_limit"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        User Limit
+                      </label>
+                      <Field
+                        type="number"
+                        id="user_limit"
+                        name="user_limit"
+                        placeholder="User Limit"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.discount_percentage &&
+                          touched.discount_percentage
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="user_limit"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* Start Date */}
+                    <div>
+                      <label
+                        htmlFor="start_date"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        Start Date
+                      </label>
+                      <Field
+                        type="date"
+                        id="start_date"
+                        name="start_date"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.start_date && touched.start_date
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="start_date"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* End Date */}
+                    <div>
+                      <label
+                        htmlFor="end_date"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        End Date
+                      </label>
+                      <Field
+                        type="date"
+                        id="end_date"
+                        name="end_date"
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.end_date && touched.end_date
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="end_date"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                      <label
+                        htmlFor="image"
+                        className="block text-gray-700 font-semibold"
+                      >
+                        Upload Image
+                      </label>
+                      <Field
+                        type="file"
+                        id="image"
+                        name="image"
+                        setFieldValue={setFieldValue}
+                        component={CustomInput}
+                        className={`w-full py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition duration-300 ${
+                          errors.image && touched.image
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="image"
+                        component="div"
+                        className="text-red-500 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex space-x-5">
+                      <Button
+                        type="submit"
+                        className="w-full bg-blue-500 text-white font-semibold p-3 rounded-lg hover:bg-blue-600 transition duration-300"
+                      >
+                        Submit
+                      </Button>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
             </AlertDialogContent>
           </AlertDialog>
           {/* export pdf */}
@@ -373,3 +513,28 @@ export function DataTableCouponComponent() {
     </section>
   );
 }
+const CustomInput = ({ field, form, setFieldValue, ...props }: any) => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // this function is used handle the file selection
+  const handleChange = (event: any) => {
+    event.preventDefault();
+    const file = event.currentTarget.files[0];
+    // call setFieldValue and pass the field name and file object to it
+    setFieldValue(field.name, file);
+    // URL.createObjectURL() converts the selected file into a URL which can be used to display preview of the selected file
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  return (
+    <>
+      <input
+        type="file"
+        onChange={(event) => {
+          handleChange(event);
+        }}
+        {...props}
+      />
+      {imagePreview && <img src={imagePreview} alt="preview" />}
+    </>
+  );
+};

@@ -11,6 +11,7 @@ export const discountAPI = o2API.injectEndpoints({
         discount_percentage: number;
         start_date: string;
         end_date: string;
+        image: string;
       }
     >({
       query: ({
@@ -19,6 +20,7 @@ export const discountAPI = o2API.injectEndpoints({
         discount_percentage,
         start_date,
         end_date,
+        image,
       }) => ({
         url: `/api/discounts`,
         method: "POST",
@@ -28,6 +30,7 @@ export const discountAPI = o2API.injectEndpoints({
           discount_percentage,
           start_date,
           end_date,
+          image,
         },
       }),
       invalidatesTags: ["Discount"],

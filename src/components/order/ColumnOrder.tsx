@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { OrderType } from "@/types/order";
-export const columnsOrder: ColumnDef<OrderType>[] = [
+export const ColumnsOrder: ColumnDef<OrderType>[] = [
   {
     accessorKey: "order_code",
     header: ({ column }) => (

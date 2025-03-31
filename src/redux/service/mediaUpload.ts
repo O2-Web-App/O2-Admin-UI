@@ -29,7 +29,28 @@ export const mediaAPI = o2API.injectEndpoints({
       }),
       invalidatesTags: ["userProfile"],
     }),
+
+    // mutli upload image
+    postMultiImage: builder.mutation<any, { images: File[] }>({
+      query: ({ images }) => {
+        const formData = new FormData();
+        // Loop through all the images and append each one
+        images.forEach((image) => {
+          formData.append("images[]", image); // Ensure each file is added as "images[]"
+        });
+        return {
+          url: "/api/images/upload-multiple",
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["userProfile"],
+    }),
   }),
 });
 
-export const { useUpdateProfileUserMutation, usePostImageMutation } = mediaAPI;
+export const {
+  useUpdateProfileUserMutation,
+  usePostImageMutation,
+  usePostMultiImageMutation,
+} = mediaAPI;

@@ -249,7 +249,7 @@ export default function TabCategory() {
                         className="pl-5"
                         onClick={() => setIsPopoverOpen(!isPopoverOpen)}
                       >
-                        <div className="bg-accent text-white text-sm px-3 py-1 rounded-md  transition ">
+                        <div className="bg-accent cursor-pointer text-white text-sm px-3 py-1 rounded-md  transition ">
                           Action
                         </div>
                       </div>
@@ -307,7 +307,7 @@ export default function TabCategory() {
                       {/* delete product */}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <div className="bg-red-500 text-white px-3 py-2 rounded transition hover:bg-red-500">
+                          <div className="bg-red-500 cursor-pointer text-white px-3 py-2 rounded transition hover:bg-red-500">
                             Delete
                           </div>
                         </AlertDialogTrigger>

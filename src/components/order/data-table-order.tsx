@@ -23,7 +23,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { columnsOrder } from "./ColumnOrder";
+import { ColumnsOrder } from "./ColumnOrder";
 
 import { Pagination } from "../Pagination";
 import { Button } from "../ui/button";
@@ -84,7 +84,7 @@ export function DataTableOrderComponent() {
   });
   const table = useReactTable({
     data: orderData,
-    columns: columnsOrder,
+    columns: ColumnsOrder,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
