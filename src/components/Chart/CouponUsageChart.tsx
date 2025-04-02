@@ -23,6 +23,13 @@ ChartJS.register(
 );
 
 const CouponUsageChart = () => {
+  const getRandomColor = () => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgba(${r}, ${g}, ${b}, 0.5)`;
+  };
+
   // Fetch coupon usage data from API
   const { data: userChart } = useGetChartUserQuery({});
   const apiData = userChart?.data?.coupon_usage || [];
@@ -31,6 +38,9 @@ const CouponUsageChart = () => {
   const couponCodes = apiData.map((entry: any) => entry.code);
   const usageCounts = apiData.map((entry: any) => entry.usage_count);
 
+  // Generate random colors based on number of coupons
+  const backgroundColors = usageCounts.map(() => getRandomColor());
+
   // Define the chart data
   const data = {
     labels: couponCodes, // X-axis: Coupon codes
@@ -38,8 +48,8 @@ const CouponUsageChart = () => {
       {
         label: "Coupon Usage",
         data: usageCounts, // Y-axis: Usage count per coupon
-        borderColor: "rgba(85, 159, 52, 1)", // Line color
-        backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
+        borderColor: backgroundColors, // Line color
+        backgroundColor: backgroundColors, // Fill area below line
         borderWidth: 2,
         pointRadius: 5,
         pointBackgroundColor: "rgba(85, 159, 52, 1)",

@@ -1,4 +1,5 @@
 import BlogManagementChart from "@/components/Chart/BlogManagementChart";
+import CardChartCount from "@/components/Chart/CardChartCount/CardChartCount";
 import CouponUsageChart from "@/components/Chart/CouponUsageChart";
 import OrderChart from "@/components/Chart/OrderChart";
 import RevenueTrend from "@/components/Chart/RevenueTrend";
@@ -9,6 +10,9 @@ import UserStatusChart from "@/components/Chart/UserStatusChart";
 export default function Home() {
   return (
     <section>
+      <div>
+        <CardChartCount />
+      </div>
       <div className="h-full w-full flex justify-center items-center">
         <UserGrowthChart />
         <UserStatusChart />

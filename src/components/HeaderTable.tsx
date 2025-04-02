@@ -17,7 +17,7 @@ export default function HeaderTable({
   };
   return (
     <section>
-      <div className="flex justify-between items-start sm:items-center gap-4 pr-5">
+      <div className="flex justify-between items-start sm:items-center gap-4 px-10">
         <div >
           <h1 className="text-title-color text-lg md:text-2xl xl:text-4xl font-bold dark:text-secondary-color-text mb-1 md:mb-2">
             {title} MANAGEMENT

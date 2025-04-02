@@ -22,6 +22,13 @@ ChartJS.register(
 );
 
 const TopSellingProducts = () => {
+  const getRandomColor = () => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgba(${r}, ${g}, ${b}, 0.5)`;
+  };
+
   // Fetch API data
   const { data: userChart } = useGetChartUserQuery({});
   const apiData = userChart?.data?.top_selling_products || [];
@@ -29,15 +36,15 @@ const TopSellingProducts = () => {
   // Extract product names and sales counts
   const labels = apiData.map((product: any) => product.name);
   const salesData = apiData.map((product: any) => Number(product.sales_count)); // Ensure sales count is a number
-
+  const backgroundColors = salesData.map(() => getRandomColor());
   const data = {
     labels, // Y-axis: Product names
     datasets: [
       {
         label: "Sales Count",
         data: salesData, // X-axis: Number of sales
-        borderColor: "rgba(85, 159, 52, 1)", // Line color
-        backgroundColor: "rgba(85, 159, 52, 0.2)", // Fill area below line
+        borderColor: backgroundColors, // Line color
+        backgroundColor: backgroundColors, // Fill area below line
         borderWidth: 2,
         pointRadius: 5,
         pointBackgroundColor: "rgba(85, 159, 52, 1)",

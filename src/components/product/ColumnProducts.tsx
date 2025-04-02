@@ -3,7 +3,8 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 
 import { ProductType } from "@/types/products";
 import { ColumnDef } from "@tanstack/react-table";
-import DeleteProduct from "./DeleteProduct";
+import DeleteProduct from "./ActionProduct";
+import ActionProduct from "./ActionProduct";
 const imageBaseUrl = process.env.NEXT_PUBLIC_O2_API_URL || "/place-holder.jpg";
 export const ColumnProducts: ColumnDef<ProductType>[] = [
   {
@@ -76,7 +77,7 @@ export const ColumnProducts: ColumnDef<ProductType>[] = [
       <DataTableColumnHeader column={column} title="ACTION" />
     ),
     cell: ({ row }) => (
-      <DeleteProduct row={row} />
+      <ActionProduct row={row} />
     )
   },
 ];

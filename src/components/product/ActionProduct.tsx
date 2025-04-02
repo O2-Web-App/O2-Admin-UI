@@ -21,8 +21,8 @@ import {
 import { toast } from "sonner";
 import { IoMdMore } from "react-icons/io";
 import UpdateProduct from "./UpdateProduct";
-import ProductView from "./viewProduct"; 
-export default function DeleteProduct({ row }: { row: any }) {
+import ProductView from "./viewProduct";
+export default function ActionProduct({ row }: { row: any }) {
   const [deleteProduct] = useDeleteProductMutation();
 
   // delete discount
@@ -74,7 +74,7 @@ export default function DeleteProduct({ row }: { row: any }) {
               View
             </Button>
           </AlertDialogTrigger>
-          <ProductView productId={row?.original?.uuid || row?.original?.id || ""} />  
+          <ProductView productUuid={row?.original?.uuid || ""} />
         </AlertDialog>
         <div className="w-full h-full">
           <UpdateProduct uuid={row.original.uuid || ""} />

@@ -9,7 +9,15 @@ export const chartAPI = o2API.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    // get all count
+    getChartCount: builder.query({
+      query: () => ({
+        url: `/api/admin/statistics`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetChartUserQuery } = chartAPI;
+export const { useGetChartUserQuery, useGetChartCountQuery } = chartAPI;

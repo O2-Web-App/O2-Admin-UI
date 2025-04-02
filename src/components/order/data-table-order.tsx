@@ -48,8 +48,8 @@ export function DataTableOrderComponent() {
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
-    XLSX.writeFile(wb, "user_profiles.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Orders");
+    XLSX.writeFile(wb, "orders.xlsx");
   };
 
   const [filterData, setFilterData] = useState<any>();
@@ -60,8 +60,8 @@ export function DataTableOrderComponent() {
   const { data, isLoading } = useGetOrderByWeeklyQuery({
     page: currentPage,
     per_page: itemsPerPage,
-    started_date: filterData?.start_date ?? "2025-03-01",
-    end_date: filterData?.end_date ?? "2025-03-28",
+    started_date: filterData?.start_date,
+    end_date: filterData?.end_date,
   });
 
   const pagination = data?.data?.metadata;
