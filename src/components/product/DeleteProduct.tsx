@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { IoMdMore } from "react-icons/io";
 import UpdateProduct from "./UpdateProduct";
+import ProductView from "./viewProduct"; 
 export default function DeleteProduct({ row }: { row: any }) {
   const [deleteProduct] = useDeleteProductMutation();
 
@@ -69,21 +70,12 @@ export default function DeleteProduct({ row }: { row: any }) {
         {/* for view */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button className="text-white bg-accent hover:bg-accent  rounded-[6px] py-1 px-4 w-auto">
+            <Button className="text-white bg-accent hover:bg-accent rounded-[6px] py-1 px-4 w-auto">
               View
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-accent">
-                View Product
-              </AlertDialogTitle>
-            </AlertDialogHeader>
-
-            {/* 🧾 Input form */}
-          </AlertDialogContent>
+          <ProductView productId={row?.original?.uuid || row?.original?.id || ""} />  
         </AlertDialog>
-        {/* for update  */}
         <div className="w-full h-full">
           <UpdateProduct uuid={row.original.uuid || ""} />
         </div>

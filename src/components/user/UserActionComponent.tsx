@@ -225,28 +225,19 @@ export function ActionUserComponent({ uuid }: ActionUserComponentProps) {
                 </div>
               </AlertDialogTitle>
               <Tabs defaultValue="info">
-                {/* <TabsList className="flex justify-center border-b">
-                  <TabsTrigger value="info">Information</TabsTrigger>
-                  <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                </TabsList> */}
                 <TabsContent value="info" className="p-4">
                   <div className="space-y-2">
-                    <div><p className="text-gray-600">Email:</p> <p>{user?.email || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Phone:</p> <p>{user?.phone_number || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Address:</p> <p>{user?.address || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Bio:</p> <p>{user?.bio || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Gender:</p> <p>{user?.gender || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Date of Birth:</p> <p>{user?.date_of_birth || "N/A"}</p></div>
-                    <div><p className="text-gray-600">Country:</p> <p>{user?.country || "N/A"}</p></div>
-                  </div>
-                </TabsContent>
-                <TabsContent value="personal" className="p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    
+                    <div><p className="text-gray-600">Email: </p> <p>{user?.email || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Phone:</p> <p>{user?.phone_number || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Address:</p> <p>{user?.address || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Bio:</p> <p>{user?.bio || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Gender:</p> <p>{user?.gender || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Date of Birth:</p> <p>{user?.date_of_birth || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
+                    <div><p className="text-gray-600">Country:</p> <p>{user?.country || "N/A"}</p><hr className="my-2 border-gray-100" /></div>
                   </div>
                 </TabsContent>
               </Tabs>
-              <AlertDialogCancel className="w-full bg-gray-200 text-black mt-4 py-2">Close</AlertDialogCancel>
+              <AlertDialogCancel className="w-full bg-accent text-white">Close</AlertDialogCancel>
             </AlertDialogContent>
           </AlertDialog>
         </div>
