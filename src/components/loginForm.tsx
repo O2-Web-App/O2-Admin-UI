@@ -47,21 +47,13 @@ export default function LoginForm() {
       );
 
       const result = await response.json();
-
-      if (response.ok) {
+      if (result.user) {
         const access_token = result?.accessToken;
-
+        router.push("/");
         // Store tokens in Redux
         dispatch(setAccessToken(access_token));
-
-        toast.success("Login Successfully ", {
-          style: {
-            background: "#22bb33",
-            color: "white",
-          },
-        });
-        router.push(`/`);
       } else {
+        setIsLoading(false);
         toast.success("Incorret Email or Password", {
           style: {
             background: "#bb2124",
@@ -70,6 +62,7 @@ export default function LoginForm() {
         });
       }
     } catch (error) {
+      setIsLoading(false);
       toast.success("Login Fail", {
         style: {
           background: "#bb2124",
@@ -77,8 +70,6 @@ export default function LoginForm() {
         },
       });
       console.error("❌ Login Error:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
