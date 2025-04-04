@@ -10,7 +10,7 @@ import UserStatusChart from "@/components/Chart/UserStatusChart";
 export default function Home() {
   return (
     <section>
-      <div>
+      <div className="my-[60px] w-[90%] mx-auto">
         <CardChartCount />
       </div>
       <div className="h-full w-full flex justify-center items-center">
