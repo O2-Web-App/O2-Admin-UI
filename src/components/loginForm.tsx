@@ -38,7 +38,7 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST}login`,
+        `/api/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -47,6 +47,7 @@ export default function LoginForm() {
       );
 
       const result = await response.json();
+
       if (result.user) {
         const access_token = result?.accessToken;
         router.push("/");
