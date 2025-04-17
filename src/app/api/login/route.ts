@@ -19,9 +19,16 @@ export async function POST(req: NextRequest) {
 
   // If the request fails, return an error message to the client-side
   if (!response.ok) {
-    return NextResponse.json({
-      message: "Failed to login",
-    });
+    const errorText = await response.text(); // log backend error
+    console.error("❌ Backend login failed:", response.status, errorText);
+
+    return NextResponse.json(
+      {
+        message: "Failed to login",
+        backendError: errorText, // helpful debug
+      },
+      { status: response.status }
+    );
   }
 
   // If the request is successful, parse the response body to get the data
