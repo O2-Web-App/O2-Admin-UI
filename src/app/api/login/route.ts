@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({ email, password }),
     }
   );
-
+  
   // If the request fails, return an error message to the client-side
   if (!response.ok) {
     const errorText = await response.text(); // log backend error
@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
 
   // If the request is successful, parse the response body to get the data
   const data = await response.json();
-
   // Extract roles and ensure the user has the "ADMIN" role
   const roles = data?.data?.user.role || "";
+
   if (roles !== "admin") {
     return NextResponse.json(
       {
@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
   const user = data.data?.user || null;
   const accessToken = data.data?.access_token || null;
   const refreshToken = data.data?.refresh_token;
+
 
   // Serialize the refresh token and set it as a cookie with
   // (httpOnly, secure, path, and sameSite options) in the response headers to the client-side

@@ -36,33 +36,34 @@ export default function LoginForm() {
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
-  
+
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST}/api/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        }
+      );
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Login failed");
       }
-  
+
       const result = await response.json();
-  
-      if (result.user) {
-        const access_token = result.accessToken;
-        dispatch(setAccessToken(access_token));
+
+      if (result && result.accessToken && result.user) {
+        dispatch(setAccessToken(result.accessToken));
         router.push("/");
-        return; // stop function here after redirect
+        return;
       }
-  
+
       setIsLoading(false);
       toast.error("Incorrect Email or Password", {
         style: { background: "#bb2124", color: "white" },
       });
-  
     } catch (error) {
       setIsLoading(false);
       toast.error("Login Failed", {
@@ -71,7 +72,6 @@ export default function LoginForm() {
       console.error("❌ Login Error:", error);
     }
   };
-  
 
   return (
     <div className={styles.loginContainer}>
