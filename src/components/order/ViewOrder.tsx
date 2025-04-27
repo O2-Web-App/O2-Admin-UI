@@ -28,7 +28,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
     process.env.NEXT_PUBLIC_O2_API_URL || "/place-holder-product.jpg";
 
   return (
-    <div className="w-full space-y-5 ">
+    <div className="w-full space-y-5  overflow-y-auto ">
       {/* order code */}
       <div className="flex items-center">
         {/* icon and title */}
@@ -199,7 +199,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
       {result?.items.length === 0 ? (
         <p></p>
       ) : (
-        <Accordion type="single" collapsible className="!p-0 !m-0">
+        <Accordion type="single" collapsible className="!p-0 !m-0 max-h-60 overflow-y-auto  scrollbar-hide">
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-description">
               Items Detail
@@ -211,7 +211,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
                   className="flex gap-4 border rounded-lg p-4 mb-4 shadow-sm bg-white"
                 >
                   {/* Image */}
-                  <div className="w-[150px]  flex-shrink-0">
+                  <div className="w-[150px] h-[150px]  flex-shrink-0">
                     <Image
                       src={imageBaseUrl + item?.image}
                       alt={item?.product_name}
