@@ -20,7 +20,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
     uuid: uuid,
   });
 
-  console.log("orderData", orderData?.data);
+
 
   const result = orderData?.data;
 
@@ -166,20 +166,18 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
                 <p className="text-[14px]">{result?.order_details?.province}</p>
               </div>
 
-              {/* google_map_link */}
-              <div className="flex items-center">
-                {/* icon and title */}
-                <p className="flex items-center text-description text-[14px] justify-center mr-3">
-                  <span className=" mr-2">
-                    {" "}
-                    <IoEarthOutline className="h-6 w-6" />
-                  </span>
-                  Goole Map Link{" : "}
-                </p>
-                <p className="text-[14px]">
-                  {result?.order_details?.google_map_link}
-                </p>
-              </div>
+              <div className="flex items-center">  
+  {/* icon and title */}  
+  <p className="flex items-center text-description text-[14px] justify-center mr-3">  
+    <span className="mr-2">  
+      <IoEarthOutline className="h-6 w-6" />  
+    </span>  
+    Google Map Link:  
+  </p>  
+  <p className="text-[14px] w-[300px] overflow-hidden whitespace-nowrap text-ellipsis">  
+    {result?.order_details?.google_map_link}  
+  </p>  
+</div>  
 
               {/* remarks */}
               <div className="flex items-center">
