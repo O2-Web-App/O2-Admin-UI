@@ -73,7 +73,7 @@ export default function CreateProduct() {
     description: Yup.string().required("Description is required"),
     category_uuid: Yup.string().required("Category is required"),
     subcategory_uuid: Yup.string(),
-    discount_uuid: Yup.string().required("Discount is required"),
+    
     price: Yup.number()
       .min(0, "Price must be positive")
       .required("Price is required"),
@@ -322,11 +322,7 @@ export default function CreateProduct() {
                         )
                       )}
                     </Field>
-                    <ErrorMessage
-                      name="discount_uuid"
-                      component="div"
-                      className={styles.errorMessage}
-                    />
+
                   </div>
 
                   {/* PRICE */}

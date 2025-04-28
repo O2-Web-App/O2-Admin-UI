@@ -20,7 +20,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
     uuid: uuid,
   });
 
-  console.log("orderData", orderData?.data);
+
 
   const result = orderData?.data;
 
@@ -28,7 +28,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
     process.env.NEXT_PUBLIC_O2_API_URL || "/place-holder-product.jpg";
 
   return (
-    <div className="w-full space-y-5 ">
+    <div className="w-full space-y-5  overflow-y-auto ">
       {/* order code */}
       <div className="flex items-center">
         {/* icon and title */}
@@ -166,20 +166,18 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
                 <p className="text-[14px]">{result?.order_details?.province}</p>
               </div>
 
-              {/* google_map_link */}
-              <div className="flex items-center">
-                {/* icon and title */}
-                <p className="flex items-center text-description text-[14px] justify-center mr-3">
-                  <span className=" mr-2">
-                    {" "}
-                    <IoEarthOutline className="h-6 w-6" />
-                  </span>
-                  Goole Map Link{" : "}
-                </p>
-                <p className="text-[14px]">
-                  {result?.order_details?.google_map_link}
-                </p>
-              </div>
+              <div className="flex items-center">  
+  {/* icon and title */}  
+  <p className="flex items-center text-description text-[14px] justify-center mr-3">  
+    <span className="mr-2">  
+      <IoEarthOutline className="h-6 w-6" />  
+    </span>  
+    Google Map Link:  
+  </p>  
+  <p className="text-[14px] w-[300px] overflow-hidden whitespace-nowrap text-ellipsis">  
+    {result?.order_details?.google_map_link}  
+  </p>  
+</div>  
 
               {/* remarks */}
               <div className="flex items-center">
@@ -201,7 +199,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
       {result?.items.length === 0 ? (
         <p></p>
       ) : (
-        <Accordion type="single" collapsible className="!p-0 !m-0">
+        <Accordion type="single" collapsible className="!p-0 !m-0 max-h-60 overflow-y-auto  scrollbar-hide">
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-description">
               Items Detail
@@ -213,7 +211,7 @@ export default function ViewOrder({ uuid }: { uuid: string }) {
                   className="flex gap-4 border rounded-lg p-4 mb-4 shadow-sm bg-white"
                 >
                   {/* Image */}
-                  <div className="w-[150px]  flex-shrink-0">
+                  <div className="w-[150px] h-[150px]  flex-shrink-0">
                     <Image
                       src={imageBaseUrl + item?.image}
                       alt={item?.product_name}
