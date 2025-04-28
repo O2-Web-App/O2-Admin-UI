@@ -22,7 +22,7 @@ export const blogAPI = o2API.injectEndpoints({
     // disable blog
     disableBlog: builder.mutation<any, { uuid: string }>({
       query: ({ uuid }) => ({
-        url: `/api/blogs/${uuid}/toggle`,
+        url: `/api/blogs/toggle-block/${uuid}`,
         method: "PATCH",
       }),
       invalidatesTags: ["Blog"],
