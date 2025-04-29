@@ -17,7 +17,7 @@ export const ColumnsDiscount: ColumnDef<DiscountType>[] = [
 
     cell: ({ row }) => (
       <div className="flex items-center">
-        <Image
+        <img
           width={100}
           height={100}
           alt="image discount"

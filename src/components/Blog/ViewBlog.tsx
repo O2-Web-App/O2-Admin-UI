@@ -132,7 +132,7 @@ export default function ViewBlog({ row }: { row: any }) {
           {/* image content */}
           {blogDetail?.image && (
             <img
-              src={imageBaseUrl + blogDetail.image}
+              src={blogDetail.image}
               alt="blog image"
               className="object-cover my-3 w-full h-[200px]"
             />

@@ -21,7 +21,7 @@ export const columnsCoupon: ColumnDef<CouponType>[] = [
 
     cell: ({ row }) => (
       <div className="flex items-center w-[150px] h-[100px]">
-        <Image
+        <img
           className="object-cover w-full h-full"
           width={100}
           height={100}
