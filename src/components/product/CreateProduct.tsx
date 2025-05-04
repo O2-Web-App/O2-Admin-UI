@@ -60,6 +60,7 @@ export default function CreateProduct() {
     price: 0,
     stock: 0,
     is_preorder: false,
+    is_recommended: false,
     preorder_duration: 0,
     expiration_date: "",
     multi_images: [],
@@ -73,7 +74,7 @@ export default function CreateProduct() {
     description: Yup.string().required("Description is required"),
     category_uuid: Yup.string().required("Category is required"),
     subcategory_uuid: Yup.string(),
-    
+
     price: Yup.number()
       .min(0, "Price must be positive")
       .required("Price is required"),
@@ -135,6 +136,7 @@ export default function CreateProduct() {
         preorder_duration: values.preorder_duration || 0,
         expiration_date: values.expiration_date,
         multi_images: filePaths,
+        is_recommended: values.is_recommended,
       });
 
       // Check response for success or failure
@@ -322,7 +324,6 @@ export default function CreateProduct() {
                         )
                       )}
                     </Field>
-
                   </div>
 
                   {/* PRICE */}
@@ -393,6 +394,22 @@ export default function CreateProduct() {
                       component="div"
                       className={styles.errorMessage}
                     />
+                  </div>
+                  
+                  {/* IS is_recommended */}
+                  <div className="flex items-center">
+                    <Field
+                      type="checkbox"
+                      id="is_recommended"
+                      name="is_recommended"
+                      className={`w-4 h-4`} // Bigger checkbox
+                    />
+                    <label
+                      htmlFor="is_recommended"
+                      className={`${styles.label} ml-2`}
+                    >
+                     Is Recommended
+                    </label>
                   </div>
 
                   {/* EXPIRATION DATE */}

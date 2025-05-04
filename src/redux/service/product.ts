@@ -34,7 +34,7 @@ export const productAPI = o2API.injectEndpoints({
         is_preorder: boolean;
         preorder_duration: number;
         expiration_date: string;
-
+        is_recommended: boolean;
         multi_images: string[];
       }
     >({
@@ -43,7 +43,7 @@ export const productAPI = o2API.injectEndpoints({
         description,
         category_uuid,
         discount_uuid,
-
+        is_recommended,
         subcategory_uuid,
         preorder_duration,
         stock,
@@ -59,7 +59,7 @@ export const productAPI = o2API.injectEndpoints({
           price,
           description,
           category_uuid,
-
+          is_recommended,
           discount_uuid,
           subcategory_uuid,
           preorder_duration,

@@ -78,6 +78,7 @@ export default function UpdateProduct({ uuid }: { uuid: string }) {
     preorder_duration: productDetail?.data?.preorder_duration || 0,
     expiration_date: productDetail?.data?.expiration_date || "",
     multi_images: productDetail?.data?.multi_images || [],
+    is_recommended: productDetail?.data?.is_recommended || false,
   };
 
   const FILE_SIZE = 1024 * 1024 * 2; // 1MB
@@ -483,6 +484,22 @@ export default function UpdateProduct({ uuid }: { uuid: string }) {
                       component="div"
                       className={styles.errorMessage}
                     />
+                  </div>
+
+                  {/* IS is_recommended */}
+                  <div className="flex items-center">
+                    <Field
+                      type="checkbox"
+                      id="is_recommended"
+                      name="is_recommended"
+                      className={`w-4 h-4`} // Bigger checkbox
+                    />
+                    <label
+                      htmlFor="is_recommended"
+                      className={`${styles.label} ml-2`}
+                    >
+                      Is Recommended
+                    </label>
                   </div>
 
                   {/* EXPIRATION DATE */}

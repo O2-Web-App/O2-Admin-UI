@@ -196,7 +196,7 @@ export function DataTableDiscountComponent() {
         </h1>
 
         <div className="space-x-5 mr-10">
-          {/* create Category */}
+          {/* create Discount */}
           <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
               <Button className="rounded-[6px] bg-primary text-white px-4 w-auto">

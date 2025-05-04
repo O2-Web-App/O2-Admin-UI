@@ -46,12 +46,36 @@ export const discountAPI = o2API.injectEndpoints({
     }),
 
     // update discount name
-    updateDiscountName: builder.mutation<any, { uuid: string; name: string }>({
-      query: ({ uuid, name }) => ({
+    updateDiscountName: builder.mutation<
+      any,
+      {
+        uuid: string;
+        name: string;
+        description: string;
+        discount_percentage: number;
+        start_date: string;
+        end_date: string;
+        image: string;
+      }
+    >({
+      query: ({
+        uuid,
+        name,
+        description,
+        discount_percentage,
+        end_date,
+        start_date,
+        image,
+      }) => ({
         url: `/api/discounts/${uuid}`,
         method: "PUT",
         body: {
           name,
+          description,
+          discount_percentage,
+          start_date,
+          end_date,
+          image,
         },
       }),
       invalidatesTags: ["Discount"],
